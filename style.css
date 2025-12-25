@@ -1,136 +1,142 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2025 新年快乐</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+/* 全局基础设置 */
+:root {
+    --primary-red: #8B0000;
+    --accent-gold: #FFD700;
+    --deep-gold: #FF8C00;
+    --glass-bg: rgba(0, 0, 0, 0.45);
+}
 
-    <div id="fireworks"></div>
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--primary-red);
+    font-family: "STKaiti", "KaiTi", "Microsoft YaHei", serif;
+}
 
-    <div class="slider-container">
-        <div class="slider-track" id="track">
-            
-            <section class="page">
-                <div class="lantern">🏮</div>
-                <div class="card">
-                    <p style="letter-spacing: 2px; opacity: 0.8;">TO: 亲爱的朋友</p>
-                    <span class="art-name">张小凡</span> <h2 style="font-size: 1.8rem; margin: 15px 0;">2025 乙巳蛇年</h2>
-                    <div style="border-top: 1px solid rgba(255,215,0,0.3); padding-top: 15px;">
-                        <p>祝你新年快乐 · 万事如意</p>
-                    </div>
-                    <p style="margin-top: 20px; font-size: 0.8rem; opacity: 0.5;">( 左右滑动翻阅 )</p>
-                </div>
-            </section>
+/* 烟花背景 */
+#fireworks {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
 
-            <section class="page">
-                <div class="card">
-                    <h3 style="font-size: 1.5rem;">✨ 敬颂冬绥 ✨</h3>
-                    <p style="line-height: 2;">
-                        岁末将至，顺问冬安<br>
-                        感谢过去一年的陪伴与支持<br>
-                        愿新的一年<br>
-                        有期待、有收获、有热爱
-                    </p>
-                    <hr style="border: none; border-top: 1px dashed var(--accent-gold); margin: 20px 0;">
-                    <p style="font-style: italic; color: #fff;">"万物更新，旧疾当愈"</p>
-                </div>
-            </section>
+.particle {
+    position: absolute;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    animation: explode 2s forwards;
+}
 
-            <section class="page">
-                <div class="card">
-                    <h3 style="font-size: 1.5rem; margin-bottom: 20px;">🍎 蛇年愿望清单</h3>
-                    <ul style="list-style: none; padding: 0; line-height: 2.5; font-size: 1.1rem;">
-                        <li>🐍 愿你“蛇”拿九稳，事业顺</li>
-                        <li>💰 愿你“蛇”来运转，财源广</li>
-                        <li>❤️ 愿你“蛇”我其谁，自信强</li>
-                        <li>🌈 愿你平安喜乐，万事胜意</li>
-                    </ul>
-                </div>
-            </section>
+@keyframes explode {
+    0% { transform: translateY(100vh); opacity: 1; }
+    40% { opacity: 1; }
+    100% { transform: translate(var(--tx), var(--ty)); opacity: 0; }
+}
 
-            <section class="page">
-                <div class="card">
-                    <h3 style="font-size: 1.5rem;">💌 专属惊喜</h3>
-                    <p>为你准备了一份特别的新年小礼</p>
-                    <a href="https://your-gift-link.com" class="jump-card">点击开启惊喜</a>
-                    <div style="margin-top: 40px; font-size: 0.8rem; opacity: 0.6;">
-                        <p>—— 你的好友 [你的名字] 敬上</p>
-                        <p>2025年1月1日</p>
-                    </div>
-                </div>
-            </section>
+/* 滑动容器 */
+.slider-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    z-index: 2;
+}
 
-        </div>
-    </div>
+.slider-track {
+    display: flex;
+    width: 400vw;
+    height: 100%;
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
 
-    <div class="dots" id="dots"></div>
-    <button class="nav-btn btn-prev" onclick="moveSlide(-1)">❮</button>
-    <button class="nav-btn btn-next" onclick="moveSlide(1)">❯</button>
+.page {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+    color: var(--accent-gold);
+    text-align: center;
+}
 
-    <script>
-        const track = document.getElementById('track');
-        const dotsContainer = document.getElementById('dots');
-        const pages = document.querySelectorAll('.page');
-        let currentIndex = 0;
-        let startX = 0;
+/* 卡片样式 */
+.card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 2px solid var(--accent-gold);
+    border-radius: 24px;
+    padding: 40px 25px;
+    width: 85%;
+    max-width: 450px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+}
 
-        // 1. 初始化指示器
-        pages.forEach((_, i) => {
-            const dot = document.createElement('div');
-            dot.classList.add('dot');
-            if(i === 0) dot.classList.add('active');
-            dot.onclick = () => goToSlide(i);
-            dotsContainer.appendChild(dot);
-        });
+/* 艺术字效果 */
+.art-name {
+    font-size: 3.2rem;
+    font-weight: 900;
+    background: linear-gradient(to bottom, #FFF720 0%, var(--accent-gold) 50%, var(--deep-gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 3px 5px rgba(0,0,0,0.5));
+    display: block;
+    margin: 10px 0;
+    letter-spacing: 4px;
+}
 
-        // 2. 核心切换逻辑
-        function updateUI() {
-            track.style.transform = `translateX(-${currentIndex * 100}vw)`;
-            document.querySelectorAll('.dot').forEach((dot, i) => {
-                dot.classList.toggle('active', i === currentIndex);
-            });
-        }
+.lantern { font-size: 50px; animation: swing 2.5s infinite ease-in-out; }
+@keyframes swing { 0%, 100% { transform: rotate(-12deg); } 50% { transform: rotate(12deg); } }
 
-        function moveSlide(direction) {
-            currentIndex = Math.max(0, Math.min(pages.length - 1, currentIndex + direction));
-            updateUI();
-        }
+/* 指示器 */
+.dots {
+    position: fixed;
+    bottom: 30px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; gap: 15px; z-index: 10;
+}
+.dot {
+    width: 8px; height: 8px;
+    background: rgba(255, 215, 0, 0.3);
+    border-radius: 50%;
+    transition: 0.4s;
+}
+.dot.active { background: var(--accent-gold); transform: scale(1.5); }
 
-        function goToSlide(index) {
-            currentIndex = index;
-            updateUI();
-        }
+/* 跳转链接卡片 */
+.jump-card {
+    background: linear-gradient(135deg, var(--accent-gold) 0%, #FFA500 100%);
+    color: var(--primary-red);
+    padding: 16px 30px;
+    border-radius: 50px;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 25px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    animation: pulse 2s infinite;
+}
 
-        // 3. 触摸手势
-        document.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive: true});
-        document.addEventListener('touchend', e => {
-            const endX = e.changedTouches[0].clientX;
-            const diff = startX - endX;
-            if (Math.abs(diff) > 60) moveSlide(diff > 0 ? 1 : -1);
-        });
+@keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,215,0,0.7); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(255,215,0,0); }
+    100% { transform: scale(1); }
+}
 
-        // 4. 烟花特效引擎
-        function createFirework() {
-            const container = document.getElementById('fireworks');
-            const colors = ['#FFD700', '#FF4500', '#FF1493', '#FFFFFF', '#00FF7F'];
-            const x = Math.random() * window.innerWidth;
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            
-            for (let i = 0; i < 18; i++) {
-                const p = document.createElement('div');
-                p.className = 'particle';
-                p.style.left = x + 'px';
-                p.style.backgroundColor = color;
-                p.style.setProperty('--tx', (Math.random() * 260 - 130) + 'px');
-                p.style.setProperty('--ty', (Math.random() * -260 - 100) + 'px');
-                container.appendChild(p);
-                setTimeout(() => p.remove(), 2000);
-            }
-        }
-        setInterval(createFirework, 700);
-    </script>
-</body>
-</html>
+/* 电脑端按钮 */
+.nav-btn {
+    position: fixed; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: var(--accent-gold);
+    font-size: 50px; cursor: pointer; z-index: 100; opacity: 0.5; transition: 0.3s;
+}
+.nav-btn:hover { opacity: 1; }
+@media (max-width: 768px) { .nav-btn { display: none; } }
+.btn-prev { left: 30px; }
+.btn-next { right: 30px; }
