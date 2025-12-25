@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>2025 新年快乐</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="fireworks"></div>
+
+    <div class="slider-container">
+        <div class="slider-track" id="track">
+            
+            <section class="page">
+                <div class="lantern">🏮</div>
+                <div class="card">
+                    <p style="letter-spacing: 2px; opacity: 0.8;">TO: 亲爱的朋友</p>
+                    <span class="art-name">张小凡</span> <h2 style="font-size: 1.8rem; margin: 15px 0;">2025 乙巳蛇年</h2>
+                    <div style="border-top: 1px solid rgba(255,215,0,0.3); padding-top: 15px;">
+                        <p>祝你新年快乐 · 万事如意</p>
+                    </div>
+                    <p style="margin-top: 20px; font-size: 0.8rem; opacity: 0.5;">( 左右滑动翻阅 )</p>
+                </div>
+            </section>
+
+            <section class="page">
+                <div class="card">
+                    <h3 style="font-size: 1.5rem;">✨ 敬颂冬绥 ✨</h3>
+                    <p style="line-height: 2;">
+                        岁末将至，顺问冬安<br>
+                        感谢过去一年的陪伴与支持<br>
+                        愿新的一年<br>
+                        有期待、有收获、有热爱
+                    </p>
+                    <hr style="border: none; border-top: 1px dashed var(--accent-gold); margin: 20px 0;">
+                    <p style="font-style: italic; color: #fff;">"万物更新，旧疾当愈"</p>
+                </div>
+            </section>
+
+            <section class="page">
+                <div class="card">
+                    <h3 style="font-size: 1.5rem; margin-bottom: 20px;">🍎 蛇年愿望清单</h3>
+                    <ul style="list-style: none; padding: 0; line-height: 2.5; font-size: 1.1rem;">
+                        <li>🐍 愿你“蛇”拿九稳，事业顺</li>
+                        <li>💰 愿你“蛇”来运转，财源广</li>
+                        <li>❤️ 愿你“蛇”我其谁，自信强</li>
+                        <li>🌈 愿你平安喜乐，万事胜意</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="page">
+                <div class="card">
+                    <h3 style="font-size: 1.5rem;">💌 专属惊喜</h3>
+                    <p>为你准备了一份特别的新年小礼</p>
+                    <a href="https://your-gift-link.com" class="jump-card">点击开启惊喜</a>
+                    <div style="margin-top: 40px; font-size: 0.8rem; opacity: 0.6;">
+                        <p>—— 你的好友 [你的名字] 敬上</p>
+                        <p>2025年1月1日</p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <div class="dots" id="dots"></div>
+    <button class="nav-btn btn-prev" onclick="moveSlide(-1)">❮</button>
+    <button class="nav-btn btn-next" onclick="moveSlide(1)">❯</button>
+
+    <script>
+        const track = document.getElementById('track');
+        const dotsContainer = document.getElementById('dots');
+        const pages = document.querySelectorAll('.page');
+        let currentIndex = 0;
+        let startX = 0;
+
+        // 1. 初始化指示器
+        pages.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            if(i === 0) dot.classList.add('active');
+            dot.onclick = () => goToSlide(i);
+            dotsContainer.appendChild(dot);
+        });
+
+        // 2. 核心切换逻辑
+        function updateUI() {
+            track.style.transform = `translateX(-${currentIndex * 100}vw)`;
+            document.querySelectorAll('.dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentIndex);
+            });
+        }
+
+        function moveSlide(direction) {
+            currentIndex = Math.max(0, Math.min(pages.length - 1, currentIndex + direction));
+            updateUI();
+        }
+
+        function goToSlide(index) {
+            currentIndex = index;
+            updateUI();
+        }
+
+        // 3. 触摸手势
+        document.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive: true});
+        document.addEventListener('touchend', e => {
+            const endX = e.changedTouches[0].clientX;
+            const diff = startX - endX;
+            if (Math.abs(diff) > 60) moveSlide(diff > 0 ? 1 : -1);
+        });
+
+        // 4. 烟花特效引擎
+        function createFirework() {
+            const container = document.getElementById('fireworks');
+            const colors = ['#FFD700', '#FF4500', '#FF1493', '#FFFFFF', '#00FF7F'];
+            const x = Math.random() * window.innerWidth;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            for (let i = 0; i < 18; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = x + 'px';
+                p.style.backgroundColor = color;
+                p.style.setProperty('--tx', (Math.random() * 260 - 130) + 'px');
+                p.style.setProperty('--ty', (Math.random() * -260 - 100) + 'px');
+                container.appendChild(p);
+                setTimeout(() => p.remove(), 2000);
+            }
+        }
+        setInterval(createFirework, 700);
+    </script>
+</body>
+</html>
