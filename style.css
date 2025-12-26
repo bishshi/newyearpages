@@ -1,8 +1,10 @@
+/* 全局基础设置 */
 :root {
     --primary-red: #8B0000;
     --accent-gold: #FFD700;
     --deep-gold: #FF8C00;
     --glass-bg: rgba(0, 0, 0, 0.45);
+    --button-gold: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
 }
 
 body, html {
@@ -12,10 +14,16 @@ body, html {
     height: 100%;
     overflow: hidden;
     background-color: var(--primary-red);
-    /* 解决手机端点击高亮 */
-    -webkit-tap-highlight-color: transparent;
+    font-family: "STKaiti", "KaiTi", "Microsoft YaHei", serif;
+    color: var(--accent-gold); /* 统一文字颜色 */
+    display: flex; /* 让内容居中 */
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    -webkit-tap-highlight-color: transparent; /* 手机端点击高亮 */
 }
 
+/* 烟花背景 */
 #fireworks {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -36,34 +44,22 @@ body, html {
     100% { transform: translate(var(--tx), var(--ty)); opacity: 0; }
 }
 
-.slider-container {
+/* 抽奖页面核心容器 */
+.lottery-container {
     position: relative;
-    width: 100vw;
-    height: 100dvh; /* 使用 dvh 确保在手机端完美居中 */
     z-index: 2;
-}
-
-.slider-track {
-    display: flex;
-    width: 400vw;
-    height: 100%;
-    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-.page {
-    width: 100vw;
-    height: 100%;
+    height: 100dvh; /* 动态视口高度，适配手机 */
     display: flex;
     flex-direction: column;
-    /* 核心居中逻辑 */
     justify-content: center;
     align-items: center;
     padding: 20px;
     box-sizing: border-box;
-    color: var(--accent-gold);
-    text-align: center;
+    max-width: 600px; /* 限制桌面端宽度 */
+    width: 100%;
 }
 
+/* 卡片样式 */
 .card {
     background: var(--glass-bg);
     backdrop-filter: blur(8px);
@@ -74,65 +70,114 @@ body, html {
     width: 85%;
     max-width: 450px;
     box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-    /* 确保内部内容不溢出 */
     display: flex;
     flex-direction: column;
     justify-content: center;
+    margin-bottom: 20px; /* 增加底部间距 */
 }
 
-.art-name {
+h1 { 
     font-family: "STKaiti", "KaiTi", serif;
-    font-size: 3.2rem;
-    font-weight: 900;
+    font-size: 2.5rem; 
+    margin: 0 0 20px 0;
     background: linear-gradient(to bottom, #FFF720 0%, var(--accent-gold) 50%, var(--deep-gold) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 3px 5px rgba(0,0,0,0.5));
-    display: block;
+}
+
+h2 {
+    font-size: 1.8rem;
     margin: 10px 0;
-    letter-spacing: 4px;
+    color: #fff;
+    letter-spacing: 2px;
 }
 
-.lantern { font-size: 50px; animation: swing 2.5s infinite ease-in-out; margin-bottom: 10px; }
-@keyframes swing { 0%, 100% { transform: rotate(-12deg); } 50% { transform: rotate(12deg); } }
-
-.dots {
-    position: fixed;
-    bottom: env(safe-area-inset-bottom, 30px); /* 适配全面屏手机底部 */
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex; gap: 15px; z-index: 10;
+p {
+    line-height: 1.8;
+    margin-bottom: 10px;
 }
-.dot {
-    width: 8px; height: 8px;
-    background: rgba(255, 215, 0, 0.3);
-    border-radius: 50%;
-}
-.dot.active { background: var(--accent-gold); transform: scale(1.5); }
 
-.jump-card {
-    background: linear-gradient(135deg, var(--accent-gold) 0%, #FFA500 100%);
+/* 抽奖按钮 */
+#lotteryButton {
+    background: var(--button-gold);
     color: var(--primary-red);
-    padding: 16px 30px;
+    padding: 15px 40px;
     border-radius: 50px;
-    text-decoration: none;
-    display: inline-block;
-    margin-top: 25px;
+    font-size: 1.5rem;
     font-weight: bold;
-    animation: pulse 2s infinite;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    animation: pulse 2s infinite; /* 继续使用心跳动画 */
+    margin-top: 20px;
 }
 
+#lotteryButton:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.4);
+}
+
+#lotteryButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    animation: none;
+    transform: none;
+    box-shadow: none;
+}
+
+/* 抽奖结果显示 */
+#resultDisplay {
+    margin-top: 30px;
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #FFF; /* 结果文字更亮眼 */
+    min-height: 50px; /* 确保占位 */
+    animation: fadeIn 1s ease-out forwards; /* 结果出现动画 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 10px 20px;
+    border: 1px solid rgba(255,215,0,0.5);
+    opacity: 0; /* 初始隐藏 */
+    max-width: 90%;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 底部提示 */
+.footer-text {
+    margin-top: 20px;
+    font-size: 0.9em;
+    opacity: 0.7;
+}
+
+/* 音乐按钮（从贺卡页复制过来） */
+#musicBtn {
+    position: fixed; top: 20px; right: 20px; z-index: 100; cursor: pointer; 
+    font-size: 24px; background: rgba(0,0,0,0.3); width: 40px; height: 40px; 
+    border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+    border: 1px solid var(--accent-gold);
+    color: var(--accent-gold); /* 音乐图标颜色 */
+}
+@keyframes rotating {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+#musicIcon {
+    display: inline-block;
+    line-height: 1;
+}
+
+/* 通用动画 */
 @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,215,0,0.7); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(255,215,0,0); }
     100% { transform: scale(1); }
 }
-
-.nav-btn {
-    position: fixed; top: 50%; transform: translateY(-50%);
-    background: none; border: none; color: var(--accent-gold);
-    font-size: 50px; cursor: pointer; z-index: 100; opacity: 0.5;
-}
-@media (max-width: 768px) { .nav-btn { display: none; } }
-.btn-prev { left: 20px; }
-.btn-next { right: 20px; }

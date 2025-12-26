@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>2026 马年好运抽奖</title>
+    <link rel="stylesheet" href="lottery.css">
+</head>
+<body>
+
+    <div id="fireworks"></div>
+
+    <div class="lottery-wrapper">
+        <div class="main-card">
+            <div style="font-size: 50px;">🐎</div>
+            <h1 class="title-gold">马年大吉抽奖</h1>
+            <p style="color: #fff; margin-bottom: 30px;">策马扬鞭开启一年好运</p>
+            
+            <button class="draw-btn" id="drawBtn" onclick="handleDraw()">即刻抽奖</button>
+            
+            <div style="margin-top: 30px;">
+                <a href="index.html" style="color: var(--accent-gold); text-decoration: none; font-size: 0.9rem; opacity: 0.7;">← 返回贺卡</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <h3 style="color: #fff; margin: 0;">🎊 恭喜中奖 🎊</h3>
+            <span class="prize-text" id="prizeResult">奖品名称</span>
+            <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">祝您在2026丙午马年<br>万事大吉，马到成功！</p>
+            <button class="close-btn" onclick="closeModal()">收下好运</button>
+        </div>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="bg.mp3" type="audio/mpeg">
+    </audio>
+    <div id="musicBtn" onclick="toggleMusic()"><span id="musicIcon">🎵</span></div>
+
+    <script>
+        // --- 抽奖核心逻辑 ---
+        const prizes = [
+            { name: "🍎 一生平安喜乐", weight: 40 },
+            { name: "🧧 锦鲤大红包", weight: 10 },
+            { name: "🐎 马到成功符", weight: 25 },
+            { name: "💰 财源滚滚来", weight: 20 },
+            { name: "⭐ 神秘终极大奖", weight: 5 }
+        ];
+
+        function handleDraw() {
+            const btn = document.getElementById('drawBtn');
+            btn.disabled = true;
+            btn.innerText = "抽奖中...";
+
+            // 模拟转圈等待感
+            setTimeout(() => {
+                const result = getPrize();
+                showModal(result);
+                btn.disabled = false;
+                btn.innerText = "再次抽奖";
+            }, 1200);
+        }
+
+        function getPrize() {
+            const total = prizes.reduce((s, p) => s + p.weight, 0);
+            let random = Math.random() * total;
+            for (const p of prizes) {
+                if (random < p.weight) return p.name;
+                random -= p.weight;
+            }
+        }
+
+        function showModal(name) {
+            document.getElementById('prizeResult').innerText = name;
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+
+        // --- 烟花 & 音乐 (与主页保持一致) ---
+        function createFirework() {
+            const container = document.getElementById('fireworks');
+            const x = Math.random() * window.innerWidth;
+            for (let i = 0; i < 15; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = x + 'px';
+                p.style.backgroundColor = ['#FFD700', '#FF4500', '#FFFFFF'][Math.floor(Math.random()*3)];
+                p.style.setProperty('--tx', (Math.random() * 200 - 100) + 'px');
+                p.style.setProperty('--ty', (Math.random() * -300 - 50) + 'px');
+                container.appendChild(p);
+                setTimeout(() => p.remove(), 2000);
+            }
+        }
+        setInterval(createFirework, 800);
+
+        const audio = document.getElementById('bgMusic');
+        function toggleMusic() {
+            if (audio.paused) { audio.play(); document.getElementById('musicIcon').style.animation = 'rotating 2s linear infinite'; }
+            else { audio.pause(); document.getElementById('musicIcon').style.animation = 'none'; }
+        }
+        document.addEventListener('click', () => { if(audio.paused) toggleMusic(); }, {once: true});
+    </script>
+</body>
+</html>
