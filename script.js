@@ -1,12 +1,14 @@
 const track = document.getElementById('track');
-const dotsContainer = document.getElementById('dots');
 const pages = document.querySelectorAll('.page');
+const dotsContainer = document.getElementById('dots');
 const audio = document.getElementById('bgMusic');
 const musicIcon = document.getElementById('musicIcon');
 let currentIndex = 0;
 let isPlaying = false;
+let startX = 0;
+let wheelTimeout = null;
 
-// 初始化 Dots
+// 初始化圆点
 pages.forEach((_, i) => {
     const dot = document.createElement('div');
     dot.classList.add('dot');
@@ -22,8 +24,8 @@ function updateUI() {
     });
 }
 
-function moveSlide(direction) {
-    currentIndex = Math.max(0, Math.min(pages.length - 1, currentIndex + direction));
+function moveSlide(dir) {
+    currentIndex = Math.max(0, Math.min(pages.length - 1, currentIndex + dir));
     updateUI();
 }
 
@@ -32,39 +34,68 @@ function goToSlide(index) {
     updateUI();
 }
 
-// 滚轮控制 (带防抖)
-let wheelTimeout;
+// 触摸控制 (优化了第三页的冲突)
+document.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive: true});
+document.addEventListener('touchend', e => {
+    const endX = e.changedTouches[0].clientX;
+    const diff = startX - endX;
+    const scrollEl = e.target.closest('.scroll-content');
+
+    // 如果在滚动区域左右大力滑动，或者不在滚动区域，则翻页
+    if (!scrollEl || Math.abs(diff) > 70) {
+        if (Math.abs(diff) > 50) moveSlide(diff > 0 ? 1 : -1);
+    }
+});
+
+// 滚轮控制 (优化边界检测)
 window.addEventListener('wheel', (e) => {
-    if (e.target.closest('.scroll-content')) return; // 寄语内部滚动时不翻页
     if (wheelTimeout) return;
+    const scrollEl = e.target.closest('.scroll-content');
+    
+    if (scrollEl) {
+        const isAtBottom = scrollEl.scrollHeight - scrollEl.scrollTop <= scrollEl.clientHeight + 1;
+        const isAtTop = scrollEl.scrollTop === 0;
+        if ((e.deltaY > 0 && !isAtBottom) || (e.deltaY < 0 && !isAtTop)) return;
+    }
+
     if (Math.abs(e.deltaY) > 30) {
         moveSlide(e.deltaY > 0 ? 1 : -1);
         wheelTimeout = setTimeout(() => { wheelTimeout = null; }, 700);
     }
 }, { passive: false });
 
-// 触摸控制
-let startX = 0;
-document.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive: true});
-document.addEventListener('touchend', e => {
-    if (e.target.closest('.scroll-content')) return;
-    const endX = e.changedTouches[0].clientX;
-    const diff = startX - endX;
-    if (Math.abs(diff) > 50) moveSlide(diff > 0 ? 1 : -1);
-});
+// 倒计时逻辑
+function updateCountdown() {
+    const target = new Date(2026, 1, 17).getTime(); // 2026春节
+    const now = new Date().getTime();
+    const gap = target - now;
 
-// 动态多彩烟花
+    if (gap <= 0) return;
+
+    const d = Math.floor(gap / (1000 * 60 * 60 * 24));
+    const h = Math.floor((gap % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const m = Math.floor((gap % (1000 * 60 * 60)) / (1000 * 60));
+    const s = Math.floor((gap % (1000 * 60)) / 1000);
+
+    document.getElementById('days').innerText = d.toString().padStart(2, '0');
+    document.getElementById('hours').innerText = h.toString().padStart(2, '0');
+    document.getElementById('minutes').innerText = m.toString().padStart(2, '0');
+    document.getElementById('seconds').innerText = s.toString().padStart(2, '0');
+}
+setInterval(updateCountdown, 1000);
+updateCountdown();
+
+// 烟花逻辑
 function createFirework() {
     const container = document.getElementById('fireworks');
-    const colors = ['#FFD700', '#FF4500', '#FF1493', '#00FFFF', '#ADFF2F'];
+    const colors = ['#FFD700', '#FF4500', '#FF1493', '#00FFFF'];
     const x = Math.random() * window.innerWidth;
     const color = colors[Math.floor(Math.random() * colors.length)];
     
-    for (let i = 0; i < 16; i++) {
+    for (let i = 0; i < 12; i++) {
         const p = document.createElement('div');
         p.className = 'particle';
         p.style.left = x + 'px';
-        p.style.color = color; // 用于 box-shadow
         p.style.backgroundColor = color;
         p.style.setProperty('--tx', (Math.random() * 200 - 100) + 'px');
         p.style.setProperty('--ty', (Math.random() * -300 - 50) + 'px');
@@ -72,71 +103,22 @@ function createFirework() {
         setTimeout(() => p.remove(), 2000);
     }
 }
-setInterval(createFirework, 800);
+setInterval(createFirework, 1000);
 
-// 音乐控制
+// 音乐与跳转
 function toggleMusic() {
     if (audio.paused) {
         audio.play();
         musicIcon.style.animation = 'rotating 2s linear infinite';
-        isPlaying = true;
     } else {
         audio.pause();
         musicIcon.style.animation = 'none';
-        isPlaying = false;
     }
 }
 
-// 自动播放黑科技
-const playOnce = () => { if(!isPlaying) toggleMusic(); document.removeEventListener('click', playOnce); };
-document.addEventListener('click', playOnce);
-
-// 跳转渐隐动画
 function handleJump(url) {
     const overlay = document.getElementById('transition-overlay');
     overlay.style.opacity = '1';
     overlay.style.pointerEvents = 'all';
-    setTimeout(() => {
-        window.location.href = url;
-    }, 800);
+    setTimeout(() => { window.location.href = url; }, 800);
 }
-
-// 寄语内部滚动冲突修复
-const scrollContent = document.getElementById('scrollContent');
-scrollContent.addEventListener('touchmove', (e) => {
-    e.stopPropagation();
-}, { passive: true });
-
-function updateCountdown() {
-    // 设置 2026 年春节日期 (2026-02-17 00:00:00)
-    const targetDate = new Date('2026-02-17T00:00:00').getTime();
-    const now = new Date().getTime();
-    const gap = targetDate - now;
-
-    if (gap <= 0) {
-        document.querySelector('.countdown-title').innerText = "新年快乐！";
-        document.querySelector('.countdown-timer').innerText = "2026 马年大吉 · 万事如意";
-        return;
-    }
-
-    // 时间换算逻辑
-    const second = 1000;
-    const minute = second * 60;
-    const hour = minute * 60;
-    const day = hour * 24;
-
-    const d = Math.floor(gap / day);
-    const h = Math.floor((gap % day) / hour);
-    const m = Math.floor((gap % hour) / minute);
-    const s = Math.floor((gap % minute) / second);
-
-    // 更新到页面，并补全 0 (补齐两位数)
-    document.getElementById('days').innerText = d.toString().padStart(2, '0');
-    document.getElementById('hours').innerText = h.toString().padStart(2, '0');
-    document.getElementById('minutes').innerText = m.toString().padStart(2, '0');
-    document.getElementById('seconds').innerText = s.toString().padStart(2, '0');
-}
-
-// 每秒刷新一次
-setInterval(updateCountdown, 1000);
-updateCountdown(); // 立即执行一次避免 1 秒空白
