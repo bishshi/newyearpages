@@ -2,6 +2,68 @@ const targetDateStr = '2026-02-17T00:00:00';
 const targetTime = new Date(targetDateStr).getTime();
 let isNearMode = false;
 
+// --- 1. 烟花引擎逻辑 ---
+const canvas = document.getElementById('fireworks');
+const ctx = canvas.getContext('2d');
+let particles = [];
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+class Particle {
+    constructor(x, y, color) {
+        this.x = x; this.y = y; this.color = color;
+        this.velocity = { x: (Math.random() - 0.5) * 8, y: (Math.random() - 0.5) * 8 };
+        this.alpha = 1;
+        this.friction = 0.95;
+    }
+    draw() {
+        ctx.globalAlpha = this.alpha;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+    }
+    update() {
+        this.velocity.x *= this.friction;
+        this.velocity.y *= this.friction;
+        this.x += this.velocity.x;
+        this.y += this.velocity.y;
+        this.alpha -= 0.01;
+    }
+}
+
+function createFirework() {
+    const x = Math.random() * canvas.width;
+    const y = Math.random() * (canvas.height * 0.6);
+    const color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+    for (let i = 0; i < 40; i++) {
+        particles.push(new Particle(x, y, color));
+    }
+}
+
+function animate() {
+    ctx.fillStyle = 'rgba(42, 0, 0, 0.2)'; // 形成拖尾效果
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    particles.forEach((p, i) => {
+        if (p.alpha > 0) {
+            p.update();
+            p.draw();
+        } else {
+            particles.splice(i, 1);
+        }
+    });
+    
+    if (Math.random() < 0.03) createFirework(); // 随机发射
+    requestAnimationFrame(animate);
+}
+animate();
+
 function updateCountdown() {
     const now = new Date().getTime();
     const diff = targetTime - now;
