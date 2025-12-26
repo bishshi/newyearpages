@@ -6,25 +6,27 @@
     <title>2026 马年大吉</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<audio id="bgMusic" loop>
-    <source src="bg.mp3" type="audio/mpeg">
-</audio>
-
-<div id="musicBtn" onclick="toggleMusic()" style="position: fixed; top: 20px; right: 20px; z-index: 100; cursor: pointer; font-size: 24px; background: rgba(0,0,0,0.3); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--accent-gold);">
-    <span id="musicIcon">🎵</span>
-</div>
 <body>
+    <div id="transition-overlay"></div>
+
+    <audio id="bgMusic" loop>
+        <source src="bg.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="musicBtn" onclick="toggleMusic()">
+        <span id="musicIcon">🎵</span>
+    </div>
 
     <div id="fireworks"></div>
 
     <div class="slider-container">
-        <div class="slider-track" id="track">
+        <div class="slider-track" id="track" style="width: 500vw;">
             
             <section class="page">
                 <div class="lantern">🏮</div>
                 <div class="card">
                     <p style="letter-spacing: 2px; opacity: 0.8;">TO: 亲爱的好友</p>
-                    <span class="art-name">死变态</span> 
+                    <span class="art-name">赵家祺</span> 
                     <h2 style="font-size: 1.8rem; margin: 15px 0;">🐎 2026 丙午马年</h2>
                     <div style="border-top: 1px solid rgba(255,215,0,0.3); padding-top: 15px;">
                         <p>祝你：马到成功 · 一马当先</p>
@@ -47,6 +49,20 @@
             </section>
 
             <section class="page">
+                <div class="card card-scrollable">
+                    <h3 style="font-size: 1.5rem; margin-bottom: 15px;">📜 新年寄语</h3>
+                    <div class="scroll-content" id="scrollContent">
+                        <p>亲爱的朋友：</p>
+                        <p>回首往昔，岁月的马蹄声声催人。在即将到来的2026丙午马年，我有很多话想对你说...</p>
+                        <p>愿你在这奔腾的时代里，既有策马扬鞭的勇气，也有信马由缰的从容。不仅要在事业上马到成功，更要在生活中寻得那一抹属于自己的宁静草场。</p>
+                        <p>无论世界如何变迁，希望你始终保持龙马精神，眼里有光，心中有爱，脚下有路。</p>
+                        <p>让我们一起在2026年，跑出属于我们的精彩轨迹！</p>
+                        <p style="text-align: right;">—— 你的老友</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="page">
                 <div class="card">
                     <h3 style="font-size: 1.5rem; margin-bottom: 20px;">🐎 马年愿望清单</h3>
                     <ul style="list-style: none; padding: 0; line-height: 2.5; font-size: 1.1rem;">
@@ -62,7 +78,7 @@
                 <div class="card">
                     <h3 style="font-size: 1.5rem;">💌 专属礼物</h3>
                     <p>策马扬鞭，奔向新的一年</p>
-                    <a href="lottery.html" class="jump-card">点击开启惊喜</a>
+                    <a href="javascript:void(0)" class="jump-card" onclick="handleJump('lottery.html?id=zjq&name=赵家祺')">点击开启惊喜</a>
                     <div style="margin-top: 40px; font-size: 0.8rem; opacity: 0.6;">
                         <p>—— 某某 敬上</p>
                         <p>2026年 农历新年</p>
@@ -77,98 +93,6 @@
     <button class="nav-btn btn-prev" onclick="moveSlide(-1)">❮</button>
     <button class="nav-btn btn-next" onclick="moveSlide(1)">❯</button>
 
-    <script>
-        const track = document.getElementById('track');
-        const dotsContainer = document.getElementById('dots');
-        const pages = document.querySelectorAll('.page');
-        let currentIndex = 0;
-        let startX = 0;
-
-        pages.forEach((_, i) => {
-            const dot = document.createElement('div');
-            dot.classList.add('dot');
-            if(i === 0) dot.classList.add('active');
-            dot.onclick = () => goToSlide(i);
-            dotsContainer.appendChild(dot);
-        });
-
-        function updateUI() {
-            track.style.transform = `translateX(-${currentIndex * 100}vw)`;
-            document.querySelectorAll('.dot').forEach((dot, i) => {
-                dot.classList.toggle('active', i === currentIndex);
-            });
-        }
-
-        function moveSlide(direction) {
-            currentIndex = Math.max(0, Math.min(pages.length - 1, currentIndex + direction));
-            updateUI();
-        }
-
-        function goToSlide(index) {
-            currentIndex = index;
-            updateUI();
-        }
-
-        document.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive: true});
-        document.addEventListener('touchend', e => {
-            const endX = e.changedTouches[0].clientX;
-            const diff = startX - endX;
-            if (Math.abs(diff) > 50) moveSlide(diff > 0 ? 1 : -1);
-        });
-
-        function createFirework() {
-            const container = document.getElementById('fireworks');
-            const colors = ['#FFD700', '#FF4500', '#FF1493', '#FFFFFF', '#00FF7F'];
-            const x = Math.random() * window.innerWidth;
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            
-            for (let i = 0; i < 18; i++) {
-                const p = document.createElement('div');
-                p.className = 'particle';
-                p.style.left = x + 'px';
-                p.style.backgroundColor = color;
-                p.style.setProperty('--tx', (Math.random() * 260 - 130) + 'px');
-                p.style.setProperty('--ty', (Math.random() * -260 - 100) + 'px');
-                container.appendChild(p);
-                setTimeout(() => p.remove(), 2000);
-            }
-        }
-        setInterval(createFirework, 700);
-        const audio = document.getElementById('bgMusic');
-        const musicIcon = document.getElementById('musicIcon');
-        let isPlaying = false;
-
-        // 切换播放/暂停
-        function toggleMusic() {
-            if (isPlaying) {
-                audio.pause();
-                musicIcon.style.animation = 'none';
-            } else {
-                audio.play();
-                musicIcon.style.animation = 'rotating 2s linear infinite';
-            }
-            isPlaying = !isPlaying;
-        }
-
-        // 自动播放黑科技：监听第一次交互
-        document.addEventListener('touchstart', function() {
-            if (!isPlaying) {
-                toggleMusic();
-            }
-        }, { once: true }); // 只执行一次
-
-        document.addEventListener('click', function() {
-            if (!isPlaying) {
-                toggleMusic();
-            }
-        }, { once: true });
-
-        // 微信环境特殊处理
-        document.addEventListener("WeixinJSBridgeReady", function () {
-            audio.play();
-            isPlaying = true;
-            musicIcon.style.animation = 'rotating 2s linear infinite';
-        }, false);
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>

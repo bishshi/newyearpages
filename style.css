@@ -6,133 +6,89 @@
 }
 
 body, html {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background-color: var(--primary-red);
-    /* 解决手机端点击高亮 */
+    margin: 0; padding: 0; width: 100%; height: 100%;
+    overflow: hidden; background-color: var(--primary-red);
+    font-family: "Microsoft YaHei", sans-serif;
     -webkit-tap-highlight-color: transparent;
 }
 
-#fireworks {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: 1;
+/* 渐隐过渡遮罩 */
+#transition-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: black; z-index: 9999;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.8s ease;
 }
 
+/* 音乐按钮 */
+#musicBtn {
+    position: fixed; top: 20px; right: 20px; z-index: 100;
+    cursor: pointer; font-size: 24px; background: rgba(0,0,0,0.3);
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--accent-gold);
+}
+
+#musicIcon { display: inline-block; }
+@keyframes rotating { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* 烟花 */
+#fireworks { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
 .particle {
-    position: absolute;
-    width: 4px; height: 4px;
-    border-radius: 50%;
-    animation: explode 2s forwards;
+    position: absolute; width: 4px; height: 4px; border-radius: 50%;
+    animation: explode 2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+    box-shadow: 0 0 10px currentColor;
 }
-
 @keyframes explode {
     0% { transform: translateY(100vh); opacity: 1; }
     40% { opacity: 1; }
     100% { transform: translate(var(--tx), var(--ty)); opacity: 0; }
 }
 
-.slider-container {
-    position: relative;
-    width: 100vw;
-    height: 100dvh; /* 使用 dvh 确保在手机端完美居中 */
-    z-index: 2;
-}
+/* 容器布局 */
+.slider-container { position: relative; width: 100vw; height: 100dvh; z-index: 2; }
+.slider-track { display: flex; height: 100%; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+.page { width: 100vw; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; color: var(--accent-gold); text-align: center; }
 
-.slider-track {
-    display: flex;
-    width: 400vw;
-    height: 100%;
-    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-.page {
-    width: 100vw;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    /* 核心居中逻辑 */
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    box-sizing: border-box;
-    color: var(--accent-gold);
-    text-align: center;
-}
-
+/* 卡片样式 */
 .card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 2px solid var(--accent-gold);
-    border-radius: 24px;
-    padding: 40px 25px;
-    width: 85%;
-    max-width: 450px;
+    background: var(--glass-bg); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    border: 2px solid var(--accent-gold); border-radius: 24px;
+    padding: 40px 25px; width: 85%; max-width: 450px;
     box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-    /* 确保内部内容不溢出 */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
 }
 
+/* 寄语滚动条美化 */
+.card-scrollable { max-height: 70vh; display: flex; flex-direction: column; }
+.scroll-content { 
+    overflow-y: auto; text-align: left; padding-right: 10px; 
+    -webkit-overflow-scrolling: touch; 
+}
+.scroll-content::-webkit-scrollbar { width: 3px; }
+.scroll-content::-webkit-scrollbar-thumb { background: var(--accent-gold); border-radius: 10px; }
+
+/* 艺术字 & 动画 */
 .art-name {
-    font-family: "STKaiti", "KaiTi", serif;
-    font-size: 3.2rem;
-    font-weight: 900;
+    font-family: "STKaiti", "KaiTi", serif; font-size: 2.8rem; font-weight: 900;
     background: linear-gradient(to bottom, #FFF720 0%, var(--accent-gold) 50%, var(--deep-gold) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 3px 5px rgba(0,0,0,0.5));
-    display: block;
-    margin: 10px 0;
-    letter-spacing: 4px;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    display: block; margin: 10px 0;
 }
-
-.lantern { font-size: 50px; animation: swing 2.5s infinite ease-in-out; margin-bottom: 10px; }
+.lantern { font-size: 50px; animation: swing 2.5s infinite ease-in-out; }
 @keyframes swing { 0%, 100% { transform: rotate(-12deg); } 50% { transform: rotate(12deg); } }
 
-.dots {
-    position: fixed;
-    bottom: env(safe-area-inset-bottom, 30px); /* 适配全面屏手机底部 */
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex; gap: 15px; z-index: 10;
-}
-.dot {
-    width: 8px; height: 8px;
-    background: rgba(255, 215, 0, 0.3);
-    border-radius: 50%;
-}
+.dots { position: fixed; bottom: env(safe-area-inset-bottom, 30px); left: 50%; transform: translateX(-50%); display: flex; gap: 15px; z-index: 10; }
+.dot { width: 8px; height: 8px; background: rgba(255, 215, 0, 0.3); border-radius: 50%; transition: 0.3s; }
 .dot.active { background: var(--accent-gold); transform: scale(1.5); }
 
 .jump-card {
     background: linear-gradient(135deg, var(--accent-gold) 0%, #FFA500 100%);
-    color: var(--primary-red);
-    padding: 16px 30px;
-    border-radius: 50px;
-    text-decoration: none;
-    display: inline-block;
-    margin-top: 25px;
-    font-weight: bold;
+    color: var(--primary-red); padding: 16px 30px; border-radius: 50px;
+    text-decoration: none; display: inline-block; margin-top: 25px; font-weight: bold;
     animation: pulse 2s infinite;
 }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-}
-
-.nav-btn {
-    position: fixed; top: 50%; transform: translateY(-50%);
-    background: none; border: none; color: var(--accent-gold);
-    font-size: 50px; cursor: pointer; z-index: 100; opacity: 0.5;
-}
+.nav-btn { position: fixed; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--accent-gold); font-size: 50px; z-index: 100; opacity: 0.3; }
 @media (max-width: 768px) { .nav-btn { display: none; } }
-.btn-prev { left: 20px; }
-.btn-next { right: 20px; }
+.btn-prev { left: 20px; } .btn-next { right: 20px; }

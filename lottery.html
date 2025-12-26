@@ -13,13 +13,13 @@
     <div class="lottery-wrapper">
         <div class="main-card">
             <div style="font-size: 50px;">🐎</div>
-            <h1 class="title-gold">马年大吉抽奖</h1>
-            <p style="color: #fff; margin-bottom: 30px;">策马扬鞭开启一年好运</p>
+            <h1 class="title-gold">马年好运抽奖</h1>
+            <p id="welcomeMsg" style="color: #fff; margin-bottom: 30px;">策马扬鞭开启一年好运</p>
             
             <button class="draw-btn" id="drawBtn" onclick="handleDraw()">即刻抽奖</button>
             
             <div style="margin-top: 30px;">
-                <a href="index.html" style="color: var(--accent-gold); text-decoration: none; font-size: 0.9rem; opacity: 0.7;">← 返回贺卡</a>
+                <a id="backToCard" href="#" style="color: var(--accent-gold); text-decoration: none; font-size: 0.9rem; opacity: 0.7;">← 返回贺卡</a>
             </div>
         </div>
     </div>
@@ -27,19 +27,45 @@
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-content">
             <h3 style="color: #fff; margin: 0;">🎊 恭喜中奖 🎊</h3>
-            <span class="prize-text" id="prizeResult">奖品名称</span>
-            <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">祝您在2026丙午马年<br>万事大吉，马到成功！</p>
+            <div id="prizeContainer">
+                <span class="prize-title" id="friendNameDisplay">亲爱的朋友：</span>
+                <span class="prize-text" id="prizeResult">正在抽取...</span>
+            </div>
+            <p style="color: rgba(255,255,255,0.8); font-size: 0.85rem; line-height: 1.6;">
+                祝您在2026丙午马年<br>龙马精神，万事胜意！
+            </p>
             <button class="close-btn" onclick="closeModal()">收下好运</button>
         </div>
     </div>
 
     <audio id="bgMusic" loop>
-        <source src="bg.mp3" type="audio/mpeg">
+        <source src="https://music.163.com/song/media/outer/url?id=1416563364.mp3" type="audio/mpeg">
     </audio>
     <div id="musicBtn" onclick="toggleMusic()"><span id="musicIcon">🎵</span></div>
 
     <script>
-        // --- 抽奖核心逻辑 ---
+        // --- 参数解析与初始化 ---
+        let currentFriendName = "好朋友";
+        
+        function initParams() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            const name = params.get('name');
+
+            if (id) {
+                document.getElementById('backToCard').href = `https://newyearpages.biss.click/2026-${id}.html`;
+            } else {
+                document.getElementById('backToCard').style.display = 'none';
+            }
+
+            if (name) {
+                currentFriendName = decodeURIComponent(name);
+                document.getElementById('welcomeMsg').innerText = `祝 ${currentFriendName} 马年大吉！`;
+                document.getElementById('friendNameDisplay').innerText = `${currentFriendName} 的新年礼是：`;
+            }
+        }
+
+        // --- 抽奖逻辑 ---
         const prizes = [
             { name: "🍎 一生平安喜乐", weight: 40 },
             { name: "🧧 锦鲤大红包", weight: 10 },
@@ -51,45 +77,43 @@
         function handleDraw() {
             const btn = document.getElementById('drawBtn');
             btn.disabled = true;
-            btn.innerText = "抽奖中...";
+            btn.innerText = "好运抽取中...";
 
-            // 模拟转圈等待感
             setTimeout(() => {
-                const result = getPrize();
-                showModal(result);
+                const total = prizes.reduce((s, p) => s + p.weight, 0);
+                let random = Math.random() * total;
+                let selected = prizes[0].name;
+                
+                for (const p of prizes) {
+                    if (random < p.weight) {
+                        selected = p.name;
+                        break;
+                    }
+                    random -= p.weight;
+                }
+
+                document.getElementById('prizeResult').innerText = selected;
+                document.getElementById('modalOverlay').classList.add('active');
                 btn.disabled = false;
                 btn.innerText = "再次抽奖";
-            }, 1200);
-        }
-
-        function getPrize() {
-            const total = prizes.reduce((s, p) => s + p.weight, 0);
-            let random = Math.random() * total;
-            for (const p of prizes) {
-                if (random < p.weight) return p.name;
-                random -= p.weight;
-            }
-        }
-
-        function showModal(name) {
-            document.getElementById('prizeResult').innerText = name;
-            document.getElementById('modalOverlay').classList.add('active');
+            }, 1000);
         }
 
         function closeModal() {
             document.getElementById('modalOverlay').classList.remove('active');
         }
 
-        // --- 烟花 & 音乐 (与主页保持一致) ---
+        // --- 烟花 & 音乐 ---
         function createFirework() {
             const container = document.getElementById('fireworks');
             const x = Math.random() * window.innerWidth;
+            const color = ['#FFD700', '#FF4500', '#FFFFFF'][Math.floor(Math.random()*3)];
             for (let i = 0; i < 15; i++) {
                 const p = document.createElement('div');
                 p.className = 'particle';
                 p.style.left = x + 'px';
-                p.style.backgroundColor = ['#FFD700', '#FF4500', '#FFFFFF'][Math.floor(Math.random()*3)];
-                p.style.setProperty('--tx', (Math.random() * 200 - 100) + 'px');
+                p.style.backgroundColor = color;
+                p.style.setProperty('--tx', (Math.random() * 240 - 120) + 'px');
                 p.style.setProperty('--ty', (Math.random() * -300 - 50) + 'px');
                 container.appendChild(p);
                 setTimeout(() => p.remove(), 2000);
@@ -99,10 +123,18 @@
 
         const audio = document.getElementById('bgMusic');
         function toggleMusic() {
-            if (audio.paused) { audio.play(); document.getElementById('musicIcon').style.animation = 'rotating 2s linear infinite'; }
-            else { audio.pause(); document.getElementById('musicIcon').style.animation = 'none'; }
+            if (audio.paused) { 
+                audio.play(); 
+                document.getElementById('musicIcon').style.animation = 'rotating 2s linear infinite'; 
+            } else { 
+                audio.pause(); 
+                document.getElementById('musicIcon').style.animation = 'none'; 
+            }
         }
         document.addEventListener('click', () => { if(audio.paused) toggleMusic(); }, {once: true});
+
+        // 启动初始化
+        initParams();
     </script>
 </body>
 </html>
