@@ -12,6 +12,48 @@ body, html {
     -webkit-tap-highlight-color: transparent;
 }
 
+#countdown {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(4px);
+    padding: 10px 20px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    color: var(--accent-gold);
+    pointer-events: none; /* 防止遮挡点击操作 */
+    width: auto;
+    white-space: nowrap;
+}
+
+.countdown-title {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    margin-bottom: 5px;
+    letter-spacing: 1px;
+}
+
+.countdown-timer {
+    font-family: "Monaco", monospace; /* 使用等宽字体防止跳动 */
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+.countdown-timer span {
+    color: #fff;
+    margin: 0 2px;
+}
+
+/* 适配移动端小屏幕 */
+@media (max-width: 375px) {
+    #countdown { top: 10px; padding: 5px 15px; }
+    .countdown-timer { font-size: 0.9rem; }
+}
 /* 渐隐过渡遮罩 */
 #transition-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
