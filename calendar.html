@@ -3,43 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>新年倒计时与日历</title>
+    <title>2026 农历新年倒计时</title>
     <link rel="stylesheet" href="calendar.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <div id="countdown">
-        <div class="countdown-title">距离 2026 农历新年还有</div>
-        <div class="countdown-timer">
-            <span id="days">00</span>天 
-            <span id="hours">00</span>时 
-            <span id="minutes">00</span>分 
-            <span id="seconds">00</span>秒
-        </div>
-    </div>
 
-    <div class="background-decorations">
-        <div class="lantern" style="top: 10%; left: 15%;"></div>
-        <div class="lantern" style="bottom: 5%; right: 20%;"></div>
+    <div id="countdown">
+        <div class="countdown-title">距离 2026 丙午马年还有</div>
+        <div class="countdown-timer">
+            <span id="d">00</span>天<span id="h">00</span>时<span id="m">00</span>分<span id="s">00</span>秒
+        </div>
     </div>
 
     <div id="calendar-container">
         <div class="calendar-header">
-            <button id="prevMonth" class="nav-button"><i class="fas fa-chevron-left"></i></button>
-            <h2 id="currentMonthYear">2024年 十二月</h2>
-            <button id="nextMonth" class="nav-button"><i class="fas fa-chevron-right"></i></button>
+            <button class="nav-btn" id="prev">＜</button>
+            <h2 id="monthTitle">加载中...</h2>
+            <button class="nav-btn" id="next">＞</button>
         </div>
-        <div id="calendar-wrapper">
-            <div class="calendar-grid">
-                <div class="day-name">日</div>
-                <div class="day-name">一</div>
-                <div class="day-name">二</div>
-                <div class="day-name">三</div>
-                <div class="day-name">四</div>
-                <div class="day-name">五</div>
-                <div class="day-name">六</div>
-                </div>
-        </div>
+        <div class="calendar-grid" id="calendarGrid">
+            </div>
     </div>
 
     <script src="calendar.js"></script>

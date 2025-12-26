@@ -1,276 +1,139 @@
-/* 定义颜色变量 */
 :root {
-    --accent-gold: #ffd700;
-    --festive-red: #c0392b; /* 喜庆的红色 */
-    --light-gold: #ffeb3b;
-    --dark-bg: #1a1a1a;
-    --text-color: #f0f0f0;
+    --accent-gold: #FFD700;    /* 亮金色 */
+    --festive-red: #B71C1C;    /* 中国红 */
+    --deep-bg: radial-gradient(circle at center, #9e1a1a 0%, #3a0000 100%);
+    --glass-white: rgba(255, 255, 255, 0.12);
 }
 
 body {
     margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--dark-bg);
-    color: var(--text-color);
-    overflow-x: hidden; /* 防止日历滑动时出现横向滚动条 */
+    padding: 0;
+    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--deep-bg);
+    min-height: 100vh;
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
 }
 
-/* 顶部新年倒计时样式 (沿用你的基础，稍作优化) */
+/* 顶部倒计时 */
 #countdown {
     position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 25px;
     z-index: 100;
     text-align: center;
-    background: rgba(0, 0, 0, 0.5); /* 略深一点的透明背景 */
-    backdrop-filter: blur(8px); /* 略强的毛玻璃效果 */
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
     padding: 12px 25px;
-    border-radius: 50px; /* 胶囊形状 */
-    border: 1px solid rgba(255, 215, 0, 0.5);
-    color: var(--accent-gold);
-    pointer-events: none; /* 防止遮挡点击操作 */
-    width: auto;
-    white-space: nowrap;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); /* 增加阴影增强浮动感 */
-    animation: fadeInDown 0.8s ease-out forwards; /* 添加淡入动画 */
-}
-
-@keyframes fadeInDown {
-    from {
-        opacity: 0;
-        transform: translate(-50%, -20px);
-    }
-    to {
-        opacity: 1;
-        transform: translate(-50%, 0);
-    }
+    border-radius: 50px;
+    border: 2px solid var(--accent-gold);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
 }
 
 .countdown-title {
-    font-size: 0.85rem;
-    opacity: 0.9;
-    margin-bottom: 5px;
-    letter-spacing: 1px;
-    color: var(--light-gold); /* 标题颜色 */
+    font-size: 0.8rem;
+    color: var(--accent-gold);
+    margin-bottom: 4px;
+    letter-spacing: 2px;
 }
 
 .countdown-timer {
-    font-family: "Monaco", monospace;
-    font-size: 1.4rem; /* 字体大一点 */
+    font-family: "Monaco", "Courier New", monospace;
+    font-size: 1.4rem;
     font-weight: bold;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
-    color: #fff; /* 数字本身是白色 */
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
 }
 
 .countdown-timer span {
-    color: var(--accent-gold); /* '天时分秒' 的颜色，数字用默认的白色 */
-    margin: 0 2px;
+    color: var(--accent-gold);
+    margin: 0 3px;
 }
 
-/* 移动端适配 */
-@media (max-width: 768px) {
-    #countdown { 
-        top: 15px; 
-        padding: 8px 18px; 
-        font-size: 0.9rem;
-    }
-    .countdown-timer { font-size: 1.1rem; }
-}
-
-/* --- 背景装饰 (可选) --- */
-.background-decorations {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    overflow: hidden;
-    z-index: -1; /* 确保在最底层 */
-}
-
-.lantern {
-    position: absolute;
-    width: 60px;
-    height: 60px;
-    background: url('https://image.example.com/lantern.png') no-repeat center center / contain; /* 假设你有一个灯笼图片 */
-    opacity: 0.3;
-    animation: floatLantern 15s ease-in-out infinite alternate;
-}
-
-@keyframes floatLantern {
-    0% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(5deg); }
-    100% { transform: translateY(0) rotate(0deg); }
-}
-/* 你可以添加更多灯笼或雪花等元素 */
-
-/* --- 日历区样式 --- */
+/* 日历容器 */
 #calendar-container {
-    position: relative;
-    max-width: 900px;
-    margin: 150px auto 50px auto; /* 留出顶部倒计时空间 */
-    background: rgba(255, 255, 255, 0.08); /* 半透明背景 */
-    backdrop-filter: blur(10px);
+    margin-top: 150px;
+    width: 90%;
+    max-width: 450px;
+    background: var(--glass-white);
+    backdrop-filter: blur(20px);
     border-radius: 20px;
-    padding: 30px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 215, 0, 0.2);
-    animation: fadeInUp 1s ease-out forwards;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(50px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
 }
 
 .calendar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
-    color: var(--light-gold);
-}
-
-.calendar-header h2 {
-    margin: 0;
-    font-size: 1.8rem;
-    text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
-}
-
-.nav-button {
-    background: none;
-    border: none;
+    margin-bottom: 20px;
     color: var(--accent-gold);
-    font-size: 1.8rem;
+}
+
+.nav-btn {
+    background: transparent;
+    border: 1px solid var(--accent-gold);
+    color: var(--accent-gold);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
     cursor: pointer;
-    padding: 5px 10px;
-    border-radius: 10px;
-    transition: all 0.3s ease;
+    transition: 0.3s;
 }
 
-.nav-button:hover:not(:disabled) {
-    background-color: rgba(255, 215, 0, 0.1);
-    transform: scale(1.1);
-}
-
-.nav-button:disabled {
-    color: rgba(255, 215, 0, 0.3);
-    cursor: not-allowed;
-}
-
-#calendar-wrapper {
-    overflow-x: hidden; /* 隐藏日历滑动时的滚动条 */
-    position: relative;
-}
+.nav-btn:disabled { opacity: 0.1; cursor: not-allowed; }
 
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
+    gap: 8px;
+}
+
+.weekday {
+    color: var(--accent-gold);
+    font-size: 0.75rem;
     text-align: center;
-    transition: transform 0.5s ease-in-out; /* 滑动动画 */
-}
-
-.day-name {
     font-weight: bold;
-    color: var(--light-gold);
-    padding-bottom: 15px;
-    font-size: 1.1rem;
+    padding-bottom: 10px;
 }
 
-.calendar-day {
+.day {
     position: relative;
-    padding: 15px 5px;
-    border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0.05);
-    color: var(--text-color);
-    font-size: 1.1rem;
+    aspect-ratio: 1;
     display: flex;
-    justify-content: center;
     align-items: center;
-    min-height: 50px; /* 确保格子高度一致 */
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    font-size: 0.95rem;
 }
 
-.calendar-day.empty {
-    background-color: transparent;
-    border: none;
-    box-shadow: none;
-}
-
-.calendar-day.today {
-    background-color: rgba(255, 215, 0, 0.2);
-    border: 1px solid var(--accent-gold);
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-}
-
-.calendar-day.past-day {
-    color: rgba(255, 255, 255, 0.4); /* 过去日期的颜色变淡 */
-    background-color: rgba(255, 255, 255, 0.02);
-}
-
-/* 红色小灯笼遮盖 */
-.calendar-day.past-day::before {
-    content: '';
+/* 过去天数的灯笼标记 */
+.day.past { color: rgba(255,255,255,0.2); }
+.day.past::after {
+    content: '🏮';
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80%; /* 灯笼大小 */
-    height: 80%;
-    background: url('https://i.ibb.co/C0wR4d1/lantern-icon.png') no-repeat center center / contain; /* 替换为你的小灯笼图标 */
-    filter: drop-shadow(0 0 5px var(--festive-red));
-    opacity: 0.6;
-    z-index: 1; /* 确保在数字上面 */
+    font-size: 1.1rem;
+    filter: drop-shadow(0 0 3px red);
+    animation: swing 3s infinite ease-in-out;
 }
 
-/* 目标日期（春节）的特殊样式 */
-.calendar-day.target-date {
-    background-color: var(--festive-red);
-    border: 2px solid var(--accent-gold);
-    color: #fff;
+@keyframes swing {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+}
+
+.day.today {
+    background: var(--accent-gold);
+    color: #310000;
     font-weight: bold;
-    box-shadow: 0 0 15px var(--festive-red);
-    animation: pulse 1.5s infinite alternate; /* 呼吸灯效果 */
+    box-shadow: 0 0 15px var(--accent-gold);
 }
 
-.calendar-day.target-date::after {
-    content: '🎉'; /* 添加一个庆祝表情 */
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-    font-size: 0.8em;
-}
-
-@keyframes pulse {
-    from { transform: scale(1); box-shadow: 0 0 15px var(--festive-red); }
-    to { transform: scale(1.05); box-shadow: 0 0 25px var(--festive-red), 0 0 35px var(--light-gold); }
-}
-
-
-/* 移动端日历布局调整 */
-@media (max-width: 768px) {
-    #calendar-container {
-        margin-top: 100px;
-        padding: 20px;
-    }
-    .calendar-header h2 {
-        font-size: 1.5rem;
-    }
-    .nav-button {
-        font-size: 1.5rem;
-    }
-    .day-name, .calendar-day {
-        font-size: 0.9rem;
-        padding: 10px 3px;
-        min-height: 40px;
-    }
+.day.target {
+    background: #ff0000;
+    border: 2px solid var(--accent-gold);
+    box-shadow: 0 0 20px #ff0000;
 }
