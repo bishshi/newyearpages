@@ -12,16 +12,30 @@
             --bg-dark: #5c0000;
         }
 
-        body {
+        /* 基础布局 */
+        html, body {
             margin: 0;
             padding: 0;
-            font-family: "STKaiti", "Microsoft YaHei", serif;
-            background: radial-gradient(circle, var(--main-red) 0%, var(--bg-dark) 100%);
-            color: #fff;
+            width: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+            background: var(--bg-dark);
             min-height: 100vh;
+            font-family: "STKaiti", "Microsoft YaHei", serif;
         }
 
-        /* 烟花背景 */
+        /* 固定背景渐变 */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, var(--main-red) 0%, var(--bg-dark) 100%);
+            z-index: -1;
+        }
+
+        /* 烟花画布 */
         #fireworks {
             position: fixed;
             top: 0;
@@ -32,95 +46,104 @@
             z-index: 1;
         }
 
-        /* 自适应容器 */
+        /* 内容容器 */
         .container {
             position: relative;
             z-index: 5;
             width: 90%;
-            max-width: 800px;
-            margin: 80px auto 40px;
-            padding: 20px;
-            background: rgba(139, 0, 0, 0.75);
+            max-width: 850px;
+            margin: 80px auto 100px;
+            padding: clamp(15px, 4vw, 30px);
+            background: rgba(139, 0, 0, 0.82);
             border: 2px solid var(--gold);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-radius: 20px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.6);
             backdrop-filter: blur(10px);
             box-sizing: border-box;
         }
 
-        /* 标题自适应 */
         header { text-align: center; margin-bottom: 30px; }
         h1 {
             color: var(--gold);
-            font-size: clamp(1.8rem, 5vw, 3rem); /* 根据屏幕自动缩放 */
+            font-size: clamp(1.8rem, 6vw, 3.2rem);
             margin: 0;
-            text-shadow: 0 0 10px rgba(249, 217, 118, 0.5);
+            text-shadow: 0 0 15px rgba(249, 217, 118, 0.5);
         }
         .subtitle {
+            color: var(--gold);
+            opacity: 0.9;
+            margin-top: 15px;
             font-size: clamp(0.9rem, 3vw, 1.2rem);
-            color: #ffcccb;
-            margin-top: 10px;
         }
 
-        /* 灯笼 - 移动端自适应 */
+        /* 灯笼固定装饰 */
         .lantern-pair {
             position: fixed;
             top: -5px;
             width: 100%;
             display: flex;
             justify-content: space-between;
-            padding: 0 2%;
+            padding: 0 4%;
             pointer-events: none;
             z-index: 10;
         }
         .lantern {
-            position: relative;
-            width: clamp(40px, 12vw, 80px); /* 手机端变小 */
-            height: clamp(35px, 10vw, 70px);
+            width: clamp(45px, 12vw, 85px);
+            height: clamp(40px, 10vw, 75px);
             background: #ff2d2d;
             border-radius: 50% 50% 45% 45%;
             border: 2px solid var(--gold);
             animation: swing 3s ease-in-out infinite alternate;
             transform-origin: top center;
+            box-shadow: 0 5px 25px rgba(255, 45, 45, 0.4);
         }
         .lantern::after {
-            content: ""; position: absolute; bottom: -20px; left: 50%;
-            width: 4px; height: 20px; background: var(--gold);
+            content: ""; position: absolute; bottom: -25px; left: 50%;
+            width: 5px; height: 25px; background: var(--gold);
         }
 
         @keyframes swing { from { transform: rotate(-6deg); } to { transform: rotate(6deg); } }
 
-        /* 音乐播放器自适应 */
-        .audio-ctrl {
+        /* 音乐播放器美化 */
+        .audio-player {
             position: fixed;
-            bottom: 15px;
+            bottom: 25px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 100;
-            width: 280px;
-            opacity: 0.8;
-            transition: opacity 0.3s;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 20px;
+            border-radius: 50px;
+            border: 1px solid var(--gold);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(5px);
         }
-        .audio-ctrl:hover { opacity: 1; }
+        audio { height: 30px; width: 220px; filter: invert(20%) sepia(90%) saturate(1500%) hue-rotate(350deg); }
 
-        /* Twikoo 移动端样式微调 */
+        /* Twikoo 自定义适配 */
         #tcomment {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 15px;
-            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.96);
+            padding: 20px;
+            border-radius: 12px;
             color: #333;
         }
-        
-        /* 针对手机屏幕的小调整 */
+
+        /* 滚动条美化 */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+
         @media screen and (max-width: 600px) {
-            .container { margin-top: 60px; padding: 15px; }
-            .audio-ctrl { width: 200px; transform: translateX(-50%) scale(0.8); bottom: 5px; }
-            .tk-content { font-size: 14px !important; }
+            .container { margin-top: 60px; }
+            audio { width: 180px; }
         }
     </style>
 </head>
 <body>
 
+    <div class="bg-gradient"></div>
     <canvas id="fireworks"></canvas>
 
     <div class="lantern-pair">
@@ -128,29 +151,34 @@
         <div class="lantern" style="animation-delay: -1.5s;"></div>
     </div>
 
-    <div class="audio-ctrl">
-        <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=280 height=52 src="bg.mp3"></iframe>
-    </div>
-
     <div class="container">
         <header>
             <h1>🐎 2026 骏马奔腾 🐎</h1>
-            <p class="subtitle">金马迎新春，留言传祝福</p>
+            <p class="subtitle">金马迎新春，万事皆如意</p>
+            <p style="font-size: 0.9rem; color: #ffcccb; margin-top: 5px;">辞旧灵蛇随岁去，接福骏马带春来</p>
         </header>
 
         <div id="tcomment"></div>
     </div>
 
+    <div class="audio-player">
+        <span style="color: var(--gold); font-size: 14px;">🎵</span>
+        <audio controls loop autoplay>
+            <source src="bg.mp3" type="audio/mpeg">
+            您的浏览器不支持音频播放
+        </audio>
+    </div>
+
     <script>
-        // 1. 初始化 Twikoo (请更换你的 EnvID)
+        // 1. 初始化 Twikoo 并载入指定参数
         twikoo.init({
-            envId: 'https://comment.biss.click', // 替换为你部署后的 envId
+            envId: 'https://comment.biss.click',
             el: '#tcomment',
-            path: '2026-greeting', // 固定的路径名，防止留言走丢
+            path: '2026-greeting',
             placeholder: '在此留下你的新年祝福吧...',
         });
 
-        // 2. 烟花自适应画布逻辑
+        // 2. 烟花特效代码
         const canvas = document.getElementById('fireworks');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -174,33 +202,39 @@
             draw() {
                 ctx.globalAlpha = this.alpha;
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, 1.5, 0, Math.PI * 2);
+                ctx.arc(this.x, this.y, 1.8, 0, Math.PI * 2);
                 ctx.fillStyle = this.color;
                 ctx.fill();
             }
             update() {
                 this.x += this.vx; this.y += this.vy;
-                this.vy += 0.05; this.alpha -= 0.015;
+                this.vy += 0.05; this.alpha -= 0.012;
             }
         }
 
         function spawn() {
             const x = Math.random() * canvas.width;
-            const y = Math.random() * canvas.height * 0.4;
-            const colors = ['#FFD700', '#FF4D4D', '#FFFFFF'];
-            for(let i=0; i< (window.innerWidth < 600 ? 20 : 40); i++) 
+            const y = Math.random() * canvas.height * 0.45;
+            const colors = ['#FFD700', '#FF4D4D', '#FFFFFF', '#FFA500'];
+            const count = window.innerWidth < 600 ? 20 : 35;
+            for(let i=0; i<count; i++) 
                 particles.push(new Particle(x, y, colors[Math.floor(Math.random()*colors.length)]));
         }
 
         function loop() {
-            ctx.fillStyle = 'rgba(92, 0, 0, 0.2)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             particles = particles.filter(p => p.alpha > 0);
             particles.forEach(p => { p.update(); p.draw(); });
             if(Math.random() < 0.05) spawn();
             requestAnimationFrame(loop);
         }
         loop();
+
+        // 解决部分浏览器禁止自动播放音乐的问题
+        document.addEventListener('click', function() {
+            const audio = document.querySelector('audio');
+            if (audio.paused) audio.play();
+        }, { once: true });
     </script>
 </body>
 </html>
