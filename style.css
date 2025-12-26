@@ -14,40 +14,41 @@ body, html {
 
 #countdown {
     position: fixed;
-    top: 15px;
+    top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 200;
+    z-index: 100;
     text-align: center;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    padding: 8px 15px;
-    border-radius: 50px;
-    border: 1px solid var(--accent-gold);
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(4px);
+    padding: 10px 20px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
     color: var(--accent-gold);
-    /* 核心修复：固定最小宽度防止抖动 */
-    min-width: 280px; 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    pointer-events: none; /* 防止遮挡点击操作 */
+    width: auto;
+    white-space: nowrap;
+}
+
+.countdown-title {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    margin-bottom: 5px;
+    letter-spacing: 1px;
 }
 
 .countdown-timer {
-    /* 使用等宽字体是防止跳动的关键 */
-    font-family: "Lucida Console", Monaco, monospace;
+    font-family: "Monaco", monospace; /* 使用等宽字体防止跳动 */
     font-size: 1.1rem;
-    display: flex;
-    justify-content: center;
-    gap: 5px;
+    font-weight: bold;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
 }
 
 .countdown-timer span {
-    display: inline-block;
-    min-width: 25px; /* 固定数字宽度 */
     color: #fff;
-    text-align: center;
+    margin: 0 2px;
 }
+
 /* 适配移动端小屏幕 */
 @media (max-width: 375px) {
     #countdown { top: 10px; padding: 5px 15px; }
