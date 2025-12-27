@@ -10,34 +10,24 @@
     <div id="countdown" onclick="handleJump('calendar.html')" style="cursor: pointer;">
         <div class="countdown-title">距离 2026 马年春节还有 (点击查看日历)</div>
         <div class="countdown-timer">
-            <span id="days">00</span>天 
-            <span id="hours">00</span>时 
-            <span id="minutes">00</span>分 
-            <span id="seconds">00</span>秒
+            <span id="days">00</span>天 <span id="hours">00</span>时 <span id="minutes">00</span>分 <span id="seconds">00</span>秒
         </div>
     </div>
     
     <div id="transition-overlay"></div>
-
-    <audio id="bgMusic" loop>
-        <source src="bg.mp3" type="audio/mpeg">
-    </audio>
-
-    <div id="musicBtn" onclick="toggleMusic()">
-        <span id="musicIcon">🎵</span>
-    </div>
-
+    <audio id="bgMusic" loop><source src="bg.mp3" type="audio/mpeg"></audio>
+    <div id="musicBtn" onclick="toggleMusic()"><span id="musicIcon">🎵</span></div>
     <div id="fireworks"></div>
 
     <div class="slider-container">
-        <div class="slider-track" id="track" style="width: 500vw;">
+        <div class="slider-track" id="track" style="width: 600vw;">
             
             <section class="page">
                 <div class="lantern">🏮</div>
                 <div class="card">
                     <p style="letter-spacing: 2px; opacity: 0.8;">TO: 亲爱的好友</p>
-                    <span class="art-name" id="userName">好友</span>
-                    <h2 style="font-size: 1.8rem; margin: 15px 0;">🐎 2026 丙午马年</h2>
+                    <span class="art-name" id="userName">好友</span> 
+                    <h2 id="pageTitle" style="font-size: 1.6rem; margin: 15px 0; color: #ffd700;">🐎 2026 丙午马年贺卡</h2>
                     <div style="border-top: 1px solid rgba(255,215,0,0.3); padding-top: 15px;">
                         <p>祝你：马到成功 · 一马当先</p>
                     </div>
@@ -47,27 +37,19 @@
             <section class="page">
                 <div class="card">
                     <h3 style="font-size: 1.5rem;">✨ 龙马精神 ✨</h3>
-                    <p style="line-height: 2;">
-                        岁序更迭，华章日新<br>
-                        愿你在新的一年里<br>
-                        奔跑如风，前程万里<br>
-                        眼里有星辰，心中有骏马
-                    </p>
-                    <hr style="border: none; border-top: 1px dashed var(--accent-gold); margin: 20px 0;">
-                    <p style="font-style: italic; color: #fff;">"愿历添新岁月，春满旧山河"</p>
+                    <p style="line-height: 2;">岁序更迭，华章日新<br>愿你在新的一年里<br>奔跑如风，前程万里</p>
+                    <p style="font-style: italic; color: #fff; margin-top: 15px;">"愿历添新岁月，春满旧山河"</p>
                 </div>
             </section>
 
             <section class="page">
                 <div class="card card-scrollable">
                     <h3 style="font-size: 1.5rem; margin-bottom: 15px;">📜 新年寄语</h3>
-                    <div class="scroll-content" id="scrollContent">
+                    <div class="scroll-content">
                         <p>亲爱的朋友：</p>
-                        <p>回首往昔，岁月的马蹄声声催人。在即将到来的2026丙午马年，我有很多话想对你说...</p>
-                        <p>愿你在这奔腾的时代里，既有策马扬鞭的勇气，也有信马由缰的从容。不仅要在事业上马到成功，更要在生活中寻得那一抹属于自己的宁静草场。</p>
-                        <p>无论世界如何变迁，希望你始终保持龙马精神，眼里有光，心中有爱，脚下有路。</p>
+                        <p>回首往昔，岁月的马蹄声声催人。愿你在这奔腾的时代里，既有策马扬鞭的勇气，也有信马由缰的从容。</p>
                         <p>让我们一起在2026年，跑出属于我们的精彩轨迹！</p>
-                        <p style="text-align: right;">—— 你的老友</p>
+                        <p style="text-align: right; margin-top: 20px;">—— <span id="msgFrom">你的老友</span></p>
                     </div>
                 </div>
             </section>
@@ -75,14 +57,14 @@
             <section class="page">
                 <div class="card">
                     <h3 style="font-size: 1.5rem; margin-bottom: 20px;">🐎 马年愿望清单</h3>
-                    <ul style="list-style: none; padding: 0; line-height: 2.5; font-size: 1.1rem;">
-                        <li>🌟 愿你“马”上有钱，财运好</li>
-                        <li>🚀 愿你“马”不停蹄，前程顺</li>
-                        <li>🍀 愿你“马”到成功，事竟成</li>
-                        <li>🍎 愿你“马”上开心，常顺遂</li>
+                    <ul style="list-style: none; padding: 0; line-height: 2.5;">
+                        <li>🌟 马上有钱 · 财运好</li>
+                        <li>🚀 马不停蹄 · 前程顺</li>
+                        <li>🍀 马到成功 · 事竟成</li>
                     </ul>
                 </div>
             </section>
+
             <section class="page">
                 <div class="card card-scrollable">
                     <h3 style="font-size: 1.5rem; margin-bottom: 15px;">🏮 留金岁月</h3>
@@ -95,9 +77,9 @@
                 <div class="card">
                     <h3 style="font-size: 1.5rem;">💌 专属礼物</h3>
                     <p>策马扬鞭，奔向新的一年</p>
-                    <a href="javascript:void(0)" class="jump-card" onclick="handleJump('/lottery.html')">点击开启惊喜</a>
-                    <div style="margin-top: 40px; font-size: 0.8rem; opacity: 0.6;">
-                        <p>—— 某某 敬上</p>
+                    <a href="javascript:void(0)" class="jump-card">点击开启惊喜</a>
+                    <div style="margin-top: 40px; font-size: 0.8rem; opacity: 0.7;">
+                        <p>—— <span id="finalFrom">你的老友</span> 敬上</p>
                         <p>2026年 农历新年</p>
                     </div>
                 </div>
@@ -110,6 +92,6 @@
     <button class="nav-btn btn-prev" onclick="moveSlide(-1)">❮</button>
     <button class="nav-btn btn-next" onclick="moveSlide(1)">❯</button>
 
-    <script src="make.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

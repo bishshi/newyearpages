@@ -3,82 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>定制 2026 马年贺卡</title>
+    <title>2026 马年贺卡定制器</title>
     <style>
-        body { font-family: "Microsoft YaHei", sans-serif; background: #b71c1c; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .config-card { background: #fff; color: #333; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h2 { color: #d32f2f; margin-top: 0; }
-        .input-group { text-align: left; margin-bottom: 15px; }
-        label { font-size: 0.85rem; color: #666; font-weight: bold; }
-        input { width: 100%; padding: 12px; margin-top: 5px; border: 2px solid #eee; border-radius: 10px; box-sizing: border-box; font-size: 1rem; }
-        input:focus { border-color: #d32f2f; outline: none; }
-        button { width: 100%; padding: 14px; background: #d32f2f; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 1.1rem; margin-top: 10px; transition: 0.3s; }
-        button:hover { background: #ff5252; }
-        #result { margin-top: 20px; display: none; background: #f9f9f9; padding: 15px; border-radius: 10px; border: 1px dashed #d32f2f; }
-        .link-text { word-break: break-all; font-size: 0.8rem; color: #333; margin-bottom: 15px; display: block; background: #fff; padding: 10px; border: 1px solid #eee; border-radius: 5px; }
+        body { font-family: sans-serif; background: #b71c1c; color: #333; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: #fff; padding: 30px; border-radius: 20px; width: 320px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        h2 { color: #d32f2f; margin-bottom: 20px; }
+        label { display: block; text-align: left; font-size: 0.8rem; color: #666; margin-top: 10px; }
+        input { width: 100%; padding: 12px; margin: 5px 0 15px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #d32f2f; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        #linkArea { margin-top: 20px; display: none; }
+        #urlDisplay { background: #f4f4f4; padding: 10px; font-size: 0.7rem; word-break: break-all; border-radius: 5px; margin-bottom: 10px; border: 1px solid #eee; display: block; }
     </style>
 </head>
 <body>
-    <div class="config-card">
-        <h2>🐎 贺卡制作</h2>
-        <p style="color: #999; font-size: 0.85rem; margin-bottom: 20px;">创建一个专属的马年祝福链接</p>
+    <div class="container">
+        <h2>🐎 贺卡定制</h2>
+        <label>收件人姓名 (必填)</label>
+        <input type="text" id="tName" placeholder="例如：朱学航">
+        <label>你的名字 (不填显示“你的老友”)</label>
+        <input type="text" id="fName" placeholder="你的名字">
+        <button onclick="create()">生成专属链接</button>
         
-        <div class="input-group">
-            <label>收件人姓名 (必填)</label>
-            <input type="text" id="targetName" placeholder="例如：朱学航">
-        </div>
-        
-        <div class="input-group">
-            <label>你的名字 (选填)</label>
-            <input type="text" id="yourName" placeholder="不填则显示“你的老友”">
-        </div>
-        
-        <button onclick="generate()">生成专属贺卡链接</button>
-        
-        <div id="result">
-            <label style="margin-bottom: 5px; display: block;">复制下方链接发送：</label>
-            <span class="link-text" id="linkBox"></span>
-            <button style="background: #28a745;" onclick="copyLink()">一键复制链接</button>
+        <div id="linkArea">
+            <span id="urlDisplay"></span>
+            <button style="background: #28a745" onclick="copy()">一键复制链接</button>
         </div>
     </div>
 
     <script>
-        function generate() {
-            const tName = document.getElementById('targetName').value.trim();
-            const yName = document.getElementById('yourName').value.trim();
+        function create() {
+            const t = document.getElementById('tName').value.trim();
+            const f = document.getElementById('fName').value.trim();
+            if(!t) return alert('请填写好友名字');
             
-            if(!tName) {
-                alert('请填写好友的姓名哦！');
-                return;
-            }
-            
-            // 获取 index.html 的绝对路径
             const baseUrl = window.location.origin + window.location.pathname.replace('make.html', 'normal.html');
+            const finalUrl = `${baseUrl}?name=${encodeURIComponent(t)}&from=${encodeURIComponent(f || '你的老友')}`;
             
-            // 拼接参数
-            let finalUrl = `${baseUrl}?name=${encodeURIComponent(tName)}`;
-            if(yName) {
-                finalUrl += `&from=${encodeURIComponent(yName)}`;
-            }
-            
-            document.getElementById('linkBox').innerText = finalUrl;
-            document.getElementById('result').style.display = 'block';
+            document.getElementById('urlDisplay').innerText = finalUrl;
+            document.getElementById('linkArea').style.display = 'block';
         }
-
-        function copyLink() {
-            const text = document.getElementById('linkBox').innerText;
-            // 兼容性更好的复制方法
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            document.body.appendChild(textArea);
-            textArea.select();
-            try {
-                document.execCommand('copy');
-                alert('链接已成功复制到剪贴板！');
-            } catch (err) {
-                alert('复制失败，请手动选择文字进行复制。');
-            }
-            document.body.removeChild(textArea);
+        function copy() {
+            const text = document.getElementById('urlDisplay').innerText;
+            navigator.clipboard.writeText(text).then(() => alert('已成功复制链接，快发给好友吧！'));
         }
     </script>
 </body>
