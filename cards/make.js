@@ -1,5 +1,5 @@
 /**
- * 2026 马年大吉 - 核心逻辑脚本
+ * 2026 马年大吉 - 核心逻辑脚本 (修正版)
  */
 
 const track = document.getElementById('track');
@@ -13,30 +13,40 @@ let isPlaying = false;
 let startX = 0;
 let wheelTimeout = null;
 
-// --- 0. URL参数解析与动态渲染 ---
-(function initParams() {
+// --- 0. URL参数解析与动态渲染 (核心修复部分) ---
+function initGreetingParams() {
     const urlParams = new URLSearchParams(window.location.search);
-    const nameParam = urlParams.get('name') || '好友'; 
+    
+    // 1. 获取参数 & 设置缺省值
+    const nameParam = urlParams.get('name') || '亲爱的朋友'; 
     const fromParam = urlParams.get('from') || '你的老友'; 
     const idParam = urlParams.get('id') || 'zxh';
 
-    // 渲染收件人
+    // 2. 渲染【收件人】(第一页)
     const nameEl = document.getElementById('userName');
     if (nameEl) nameEl.innerText = nameParam;
 
-    // 渲染发件人（寄语页和结尾页）
-    const msgFrom = document.getElementById('msgFrom');
-    const finalFrom = document.getElementById('finalFrom');
-    if (msgFrom) msgFrom.innerText = fromParam;
-    if (finalFrom) finalFrom.innerText = fromParam;
+    // 3. 渲染【发件人】(多处同步)
+    // 查找页面中所有需要显示发件人的地方
+    const fromElements = ['msgFrom', 'finalFrom'];
+    fromElements.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = fromParam;
+    });
 
-    // 修改跳转链接
+    // 4. 动态修改跳转按钮的 URL
     const jumpBtn = document.querySelector('.jump-card');
     if (jumpBtn) {
         const targetUrl = `lottery.html?id=${idParam}&name=${encodeURIComponent(nameParam)}&from=${encodeURIComponent(fromParam)}`;
-        jumpBtn.setAttribute('onclick', `handleJump('${targetUrl}')`);
+        // 绑定跳转函数
+        jumpBtn.onclick = function() {
+            handleJump(targetUrl);
+        };
     }
-})();
+}
+
+// 页面加载完成后立即执行
+document.addEventListener('DOMContentLoaded', initGreetingParams);
 
 // --- 1. 初始化分页圆点 ---
 pages.forEach((_, i) => {
@@ -64,7 +74,7 @@ function goToSlide(index) {
     updateUI();
 }
 
-// --- 2. 交互冲突处理 ---
+// --- 2. 交互冲突处理 (保持原样) ---
 document.addEventListener('touchstart', e => { 
     startX = e.touches[0].clientX; 
 }, { passive: true });
@@ -129,7 +139,7 @@ function createFirework() {
 }
 setInterval(createFirework, 1200);
 
-// --- 5. 功能逻辑 ---
+// --- 5. 音乐与跳转逻辑 ---
 function toggleMusic() {
     if (audio.paused) {
         audio.play();
@@ -142,12 +152,14 @@ function toggleMusic() {
 
 function handleJump(url) {
     const overlay = document.getElementById('transition-overlay');
-    overlay.style.opacity = '1';
-    overlay.style.pointerEvents = 'all';
+    if (overlay) {
+        overlay.style.opacity = '1';
+        overlay.style.pointerEvents = 'all';
+    }
     setTimeout(() => { window.location.href = url; }, 800);
 }
 
-// --- 6. Twikoo ---
+// --- 6. Twikoo 评论区初始化 ---
 if (typeof twikoo !== 'undefined') {
     twikoo.init({
         envId: 'https://comment.biss.click', 
