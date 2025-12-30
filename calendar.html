@@ -3,29 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 新年倒计时</title>
+    <title>2026 丙午马年倒计时</title>
     <link rel="stylesheet" href="calendar.css">
 </head>
 <body>
+
     <canvas id="fireworks"></canvas>
-    <div class="main-wrapper">
-        <div id="countdown">
-            <div class="countdown-title">距离 2026 丙午马年还有</div>
-            <div class="countdown-timer">
-                <span id="d">00</span>天<span id="h">00</span>时<span id="m">00</span>分<span id="s">00</span>秒
-            </div>
+
+    <div class="app-wrapper" id="app">
+        <div class="year-text">🐎 2026 丙午马年</div>
+        
+        <div class="timer">
+            <div class="time-unit"><b id="d">00</b><span>天</span></div>
+            <div class="time-unit"><b id="h">00</b><span>时</span></div>
+            <div class="time-unit"><b id="m">00</b><span>分</span></div>
+            <div class="time-unit"><b id="s">00</b><span>秒</span></div>
         </div>
 
-        <div id="calendar-container">
-            <div class="calendar-header">
-                <button class="nav-btn" id="prev">＜</button>
-                <h2 id="monthTitle">加载中...</h2>
-                <button class="nav-btn" id="next">＞</button>
+        <div class="calendar-main">
+            <button class="nav-btn btn-prev" onclick="movePage(-1)" aria-label="上个月">❮</button>
+            <button class="nav-btn btn-next" onclick="movePage(1)" aria-label="下个月">❯</button>
+            
+            <div class="calendar-viewport" id="viewport">
+                <div class="month-container" id="container">
+                    </div>
             </div>
-            <div class="calendar-grid" id="calendarGrid">
-                </div>
+            <div class="hint">滚轮或按键翻页</div>
         </div>
     </div>
+
     <script src="calendar.js"></script>
 </body>
 </html>
