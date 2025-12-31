@@ -1,19 +1,38 @@
 /**
- * 2026 马年倒计时核心逻辑
+ * 2026 丙午马年倒计时 - 完整逻辑版
  */
 
-// 1. 设置目标时间：2026年春节 (2月17日)
-const targetDate = new Date('2026-02-17T00:00:00');
-const today = new Date();
+// --- 1. 配置数据 ---
+// 目标：2026年春节 (2月17日)
+const targetDate = new Date(2026, 1, 17, 0, 0, 0); 
 
-// 2. 倒计时更新函数
+// 节日映射表 (格式：Year-MonthIndex-Day)
+// 注意：MonthIndex 从 0 开始 (0=1月, 1=2月...)
+const festivals = {
+    '2026-0-26': { name: '腊八', type: 'sub' },  // 1月26日
+    '2026-1-10': { name: '小年', type: 'sub' },  // 2月10日
+    '2026-1-16': { name: '除夕', type: 'sub' },  // 2月16日
+    '2026-1-17': { name: '春节', type: 'main' }, // 2月17日
+    '2026-2-3':  { name: '元宵', type: 'sub' },  // 3月3日
+    '2026-2-20': { name: '龙抬头', type: 'sub'}  // 3月20日
+};
+
+const dom = {
+    app: document.getElementById('app'),
+    d: document.getElementById('d'),
+    h: document.getElementById('h'),
+    m: document.getElementById('m'),
+    s: document.getElementById('s')
+};
+
+// --- 2. 倒计时引擎 ---
 function updateTimer() {
     const now = new Date();
     const diff = targetDate - now;
 
-    // 如果时间到达 0
+    // 结束状态
     if (diff <= 0) {
-        document.getElementById('app').innerHTML = `
+        dom.app.innerHTML = `
             <div class="year-text" style="font-size:18vw">马年大吉</div>
             <div style="font-size:6vw; color:var(--gold)">🐎 万事如意 🐎</div>
         `;
@@ -25,34 +44,40 @@ function updateTimer() {
     const m = Math.floor((diff % 3600000) / 60000);
     const s = Math.floor((diff % 60000) / 1000);
 
-    // 更新 DOM
-    document.getElementById('d').innerText = d.toString().padStart(2, '0');
-    document.getElementById('h').innerText = h.toString().padStart(2, '0');
-    document.getElementById('m').innerText = m.toString().padStart(2, '0');
-    document.getElementById('s').innerText = s.toString().padStart(2, '0');
+    // 刷新数字
+    dom.d.innerText = d.toString().padStart(2, '0');
+    dom.h.innerText = h.toString().padStart(2, '0');
+    dom.m.innerText = m.toString().padStart(2, '0');
+    dom.s.innerText = s.toString().padStart(2, '0');
 
-    // 智能切换：如果不足 24 小时，进入冲刺模式
+    // 冲刺模式 (最后24小时)
     if (d < 1) {
-        document.getElementById('app').classList.add('state-final-day');
+        dom.app.classList.add('state-final-day');
     } else {
-        document.getElementById('app').classList.remove('state-final-day');
+        dom.app.classList.remove('state-final-day');
     }
 }
 
-// 3. 动态生成日历
+// --- 3. 日历生成逻辑 ---
 function initCalendar() {
     const container = document.getElementById('container');
     const viewport = document.getElementById('viewport');
+    const today = new Date();
     
-    // 获取需要展示的月份
+    // 生成月份：从今天开始，直到2026年3月底 (覆盖龙抬头)
     const months = [];
     let curr = new Date(today.getFullYear(), today.getMonth(), 1);
-    while (curr <= targetDate) {
+    const limitDate = new Date(2026, 2, 31); 
+    // 防止如果当前时间超过2026年导致无法渲染，给个最小渲染区间
+    const safeLimit = limitDate > targetDate ? limitDate : new Date(targetDate.getTime() + 86400000*30);
+
+    while (curr <= safeLimit) {
         months.push(new Date(curr));
         curr.setMonth(curr.getMonth() + 1);
     }
 
     months.forEach(mDate => {
+        // 创建月份页
         const page = document.createElement('div');
         page.className = 'month-page';
         page.innerHTML = `<div class="month-name">${mDate.getFullYear()}年 ${mDate.getMonth() + 1}月</div>`;
@@ -60,31 +85,42 @@ function initCalendar() {
         const grid = document.createElement('div');
         grid.className = 'grid';
         
-        // 渲染星期头
+        // 星期头
         ['日','一','二','三','四','五','六'].forEach(w => {
             grid.innerHTML += `<div style="text-align:center; font-size:1rem; color:#999; padding-bottom:8px; font-weight:bold">${w}</div>`;
         });
 
+        // 计算日期
         const firstDay = new Date(mDate.getFullYear(), mDate.getMonth(), 1).getDay();
         const totalDays = new Date(mDate.getFullYear(), mDate.getMonth() + 1, 0).getDate();
 
-        // 填充空白
+        // 填充月初空白
         for(let i=0; i<firstDay; i++) grid.appendChild(document.createElement('div'));
 
-        // 渲染日期
+        // 填充具体日期
         for(let d=1; d<=totalDays; d++) {
             const cell = document.createElement('div');
             cell.className = 'cell';
             cell.innerText = d;
 
-            // 标注春节 (2026-02-17)
-            if (mDate.getFullYear() === 2026 && mDate.getMonth() === 1 && d === 17) {
-                cell.classList.add('target-day');
+            // 检查是否有节日
+            const dateKey = `${mDate.getFullYear()}-${mDate.getMonth()}-${d}`;
+            const festData = festivals[dateKey];
+
+            if (festData) {
+                if (festData.type === 'main') {
+                    cell.classList.add('target-day');
+                } else {
+                    cell.classList.add('festival-day');
+                    cell.setAttribute('data-name', festData.name);
+                }
             }
 
-            // 标注已过去的天数 (红灯笼)
-            if (mDate.getFullYear() === today.getFullYear() && 
-                mDate.getMonth() === today.getMonth() && d < today.getDate()) {
+            // 检查是否已过去 (红灯笼覆盖)
+            const cellDate = new Date(mDate.getFullYear(), mDate.getMonth(), d);
+            const todayZero = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            
+            if (cellDate < todayZero) {
                 cell.innerHTML += `<div class="lantern-icon"></div>`;
                 cell.classList.add('passed');
             }
@@ -94,7 +130,7 @@ function initCalendar() {
         container.appendChild(page);
     });
 
-    // 滚轮控制逻辑：单次滚动翻一整月
+    // 滚轮翻页监听
     let isScrolling = false;
     viewport.addEventListener('wheel', (e) => {
         e.preventDefault();
@@ -106,13 +142,12 @@ function initCalendar() {
     }, { passive: false });
 }
 
-// 4. 翻页控制
 function movePage(dir) {
     const v = document.getElementById('viewport');
     v.scrollBy({ left: dir * v.offsetWidth, behavior: 'smooth' });
 }
 
-// 5. 烟花背景粒子引擎
+// --- 4. 烟花粒子特效 ---
 const canvas = document.getElementById('fireworks');
 const ctx = canvas.getContext('2d');
 let particles = [];
@@ -131,11 +166,11 @@ class Particle {
         this.vx = Math.cos(angle) * speed;
         this.vy = Math.sin(angle) * speed;
         this.life = 1;
-        this.color = `hsl(${Math.random() * 50 + 10}, 100%, 65%)`;
+        this.color = `hsl(${Math.random() * 50 + 10}, 100%, 65%)`; // 金红橙色系
     }
     update() {
         this.x += this.vx; this.y += this.vy;
-        this.vy += 0.06; // 重力感
+        this.vy += 0.06; // 重力
         this.life -= 0.015;
     }
     draw() {
@@ -148,9 +183,11 @@ class Particle {
 }
 
 function loop() {
+    // 拖尾效果
     ctx.fillStyle = 'rgba(74, 0, 0, 0.2)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
+    // 随机发射烟花
     if (Math.random() < 0.05) {
         const x = Math.random() * canvas.width;
         const y = Math.random() * canvas.height / 2.5;
@@ -162,7 +199,7 @@ function loop() {
     requestAnimationFrame(loop);
 }
 
-// 启动程序
+// --- 5. 启动程序 ---
 initCalendar();
 setInterval(updateTimer, 1000);
 updateTimer();

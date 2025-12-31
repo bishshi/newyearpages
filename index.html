@@ -3,25 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>向导页面</title>
+    <title>2026丙午马年向导</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <canvas id="fireworks"></canvas>
     <div id="transition-overlay"></div>
-    <script src="https://cdn.jsdelivr.net/gh/bishshi/wechat-detect/wechat-detect.js"></script>
+
     <main class="guide-container">
         <header class="guide-header">
             <div class="lantern">🏮</div>
-            <h1 class="art-name">向导页</h1>
-            <p class="guide-tagline">2026马年</p>
+            <h1 class="art-name">马年大吉</h1>
+            <p class="guide-tagline">2026 · 丙午新春</p>
         </header>
+
         <nav class="nav-grid">
-            <a href="calendar.html" class="nav-item">
+            <a href="calendar.html" class="nav-item"
+            data-end="2026-2-17 23:59:59"
+            data-msg="马年春节倒计时结束">
                 <span class="item-icon">📅</span>
                 <div class="item-info">
                     <h3>新年日历</h3>
-                    <p>2026丙午马年倒计时及日历</p>
+                    <p>查看2026年马年日历与倒计时</p>
                 </div>
             </a>
 
@@ -29,39 +32,39 @@
                 <span class="item-icon">📜</span>
                 <div class="item-info">
                     <h3>新春贺信</h3>
-                    <p>新春贺信</p>
+                    <p>新春致辞</p>
                 </div>
             </a>
 
             <a href="bbs.html" class="nav-item">
-                <span class="item-icon">💬</span>
+                <span class="item-icon">📝</span>
                 <div class="item-info">
                     <h3>留言板</h3>
-                    <p>新年留言板，分享你的新年祝福与心愿。</p>
+                    <p>留下你对新年的美好祝愿</p>
+                </div>
+            </a>
+
+            <a href="fireworks.html" class="nav-item" >
+                <span class="item-icon">🎆</span>
+                <div class="item-info">
+                    <h3>璀璨烟花</h3>
+                    <p>全屏粒子交互，点燃绚烂冬夜</p>
+                </div>
+            </a>
+
+            <a href="lottery.html" class="nav-item" >
+                <span class="item-icon">🐉</span>
+                <div class="item-info">
+                    <h3>幸运抽奖</h3>
+                    <p>龙马精神，抽取你的新年好运</p>
                 </div>
             </a>
 
             <a href="danmu.html" class="nav-item">
-                <span class="item-icon">🎉</span>
+                <span class="item-icon">💬</span>
                 <div class="item-info">
                     <h3>弹幕墙</h3>
-                    <p>新年弹幕墙，实时展示大家的新年祝福。</p>
-                </div>
-            </a>
-            
-            <a href="fireworks.html" class="nav-item">
-                <span class="item-icon">🎆</span>
-                <div class="item-info">
-                    <h3>璀璨烟花</h3>
-                    <p>全屏粒子交互，支持触屏点燃绚烂冬夜。</p>
-                </div>
-            </a>
-            
-            <a href="cards/normal.html" class="nav-item">
-                <span class="item-icon">🧧</span>
-                <div class="item-info">
-                    <h3>新年寄语</h3>
-                    <p>精美的玻璃拟态卡片，承载温情祝福。</p>
+                    <p>实时展示大家的新年祝福</p>
                 </div>
             </a>
 
@@ -69,21 +72,34 @@
                 <span class="item-icon">🧧</span>
                 <div class="item-info">
                     <h3>生成贺卡</h3>
-                    <p>生成精美的玻璃拟态卡片，承载温情祝福。</p>
+                    <p>制作精美的玻璃拟态祝福卡片</p>
                 </div>
             </a>
 
-            <a href="lottery.html" class="nav-item">
-                <span class="item-icon">🐉</span>
+            <a href = "riddles.html" class="nav-item"
+            data-start="2026-03-01 00:00:00"
+            data-end="2026-03-10 23:59:59"
+            data-msg = "元宵节期间开启">
+                <span class="item-icon">🧩</span>
                 <div class="item-info">
-                    <h3>抽奖页面</h3>
-                    <p></p>
+                    <h3>新年谜语</h3>
+                    <p>猜谜语，赢取新年好礼</p>
+                </div>
+            </a>
+
+            <a href="about.html" class="nav-item"
+            data-start="9999-12-31 00:00:00">
+                <span class="item-icon">ℹ️</span>
+                <div class="item-info">
+                    <h3>关于我们</h3>
+                    <p>了解项目背景与团队成员</p>
                 </div>
             </a>
 
         </nav>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/gh/bishshi/wechat-detect/wechat-detect.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

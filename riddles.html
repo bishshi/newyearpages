@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>元宵节快乐 - 欢乐猜灯谜</title>
+    <style>
+        /* --- 全局样式 --- */
+        :root {
+            --primary-red: #d92027;
+            --dark-red: #9b0000;
+            --gold: #ffd700;
+            --bg-dark: #2c0003;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "KaiTi", "STKaiti", "Microsoft YaHei", serif;
+            background: linear-gradient(to bottom, #1a0005, #4a0005);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- 装饰性背景粒子 (模拟孔明灯) --- */
+        .bg-lantern {
+            position: absolute;
+            background: rgba(255, 100, 100, 0.3);
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(255, 200, 100, 0.5);
+            animation: floatUp linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(110vh) scale(0.5); opacity: 0; }
+            20% { opacity: 0.8; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+
+        /* --- 主容器 --- */
+        .container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        /* --- 灯笼主体 --- */
+        .lantern-string {
+            width: 4px;
+            height: 60px;
+            background: var(--gold);
+            margin: 0 auto;
+        }
+
+        .lantern-body {
+            background-color: var(--primary-red);
+            border-radius: 40px;
+            padding: 20px;
+            box-shadow: 
+                0 0 0 6px var(--dark-red), 
+                0 0 30px rgba(255, 50, 50, 0.6),
+                inset 0 0 40px rgba(0,0,0,0.2);
+            position: relative;
+            animation: swing 3s ease-in-out infinite alternate;
+            transform-origin: top center;
+            border-top: 15px solid var(--gold);
+            border-bottom: 15px solid var(--gold);
+        }
+
+        /* 模拟灯笼骨架线条 */
+        .lantern-body::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 20%;
+            width: 60%; height: 100%;
+            border-left: 2px solid rgba(0,0,0,0.1);
+            border-right: 2px solid rgba(0,0,0,0.1);
+            pointer-events: none;
+        }
+
+        @keyframes swing {
+            from { transform: rotate(-2deg); }
+            to { transform: rotate(2deg); }
+        }
+
+        /* --- 灯谜内容区域 --- */
+        .riddle-content {
+            background: #fff8e1; /* 纸张颜色 */
+            color: #5d0000;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .riddle-title {
+            font-size: 1.2rem;
+            color: #d92027;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .riddle-text {
+            font-size: 1.5rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .answer-box {
+            font-size: 1.3rem;
+            color: var(--primary-red);
+            border-top: 1px dashed #ccc;
+            padding-top: 10px;
+            width: 100%;
+            display: none; /* 默认隐藏 */
+        }
+
+        .answer-box.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- 按钮样式 --- */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        button {
+            background: var(--gold);
+            color: #630000;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #b8860b;
+            transition: all 0.1s;
+            font-family: inherit;
+        }
+
+        button:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #b8860b;
+        }
+
+        /* --- 底部流苏 --- */
+        .tassel {
+            width: 10px;
+            height: 20px;
+            background: var(--gold);
+            margin: 0 auto;
+            position: relative;
+        }
+        .tassel::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: -15px;
+            width: 40px;
+            height: 80px;
+            background: repeating-linear-gradient(
+                90deg,
+                var(--primary-red),
+                var(--primary-red) 4px,
+                transparent 4px,
+                transparent 5px
+            );
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="bg-effects"></div>
+
+    <div class="container">
+        <div class="lantern-string"></div>
+
+        <div class="lantern-body">
+            <h1 style="margin: 0; font-size: 1.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">🏮 元宵猜灯谜 🏮</h1>
+            
+            <div class="riddle-content">
+                <div class="riddle-title">谜题 <span id="riddle-id">1</span></div>
+                <div class="riddle-text" id="question">正在加载灯谜...</div>
+                
+                <div class="answer-box" id="answer">
+                    谜底：<span id="answer-text"></span>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button onclick="toggleAnswer()">查看谜底</button>
+                <button onclick="nextRiddle()">下一题</button>
+            </div>
+        </div>
+
+        <div class="tassel"></div>
+    </div>
+
+    <script>
+        // --- 灯谜数据库 ---
+        const riddles = [
+            // 字谜类
+            { q: "山上还有山 (打一字)", a: "出" },
+            { q: "十张口，一颗心 (打一字)", a: "思" },
+            { q: "一口咬掉牛尾巴 (打一字)", a: "告" },
+            { q: "半边是红，半边是绿，半边喜雨，半边喜风 (打一字)", a: "秋 (禾苗喜雨，火喜风)" },
+            { q: "多出一半 (打一字)", a: "岁 (‘多’出一半是夕，‘出’一半是山)" },
+            { q: "四个晚上 (打一字)", a: "罗 (四+夕)" },
+            { q: "需要一半，留下一半 (打一字)", a: "雷 (需半=雨，留半=田)" },
+
+            // 动植物/水果类
+            { q: "身穿绿衣裳，肚里水汪汪，生的子儿多，个个黑脸膛 (打一水果)", a: "西瓜" },
+            { q: "兄弟七八个，围着柱子坐，大家一分手，衣服就扯破 (打一植物)", a: "大蒜" },
+            { q: "年纪不算大，胡子一大把，不管见到谁，总爱叫妈妈 (打一动物)", a: "山羊" },
+            { q: "一头实，一头空，一头白，一头青 (打一植物)", a: "葱" },
+            { q: "小小一姑娘，坐在水中央，身穿粉红袄，阵阵放清香 (打一植物)", a: "荷花" },
+
+            // 日常物品/现象类
+            { q: "像云不是云，像烟不是烟，风吹轻轻飘，日出慢慢散 (打一自然现象)", a: "雾" },
+            { q: "远看像道墙，近看一排房，走时快如飞，脚下雷声响 (打一交通工具)", a: "火车" },
+            { q: "有面没有口，有脚没有手，虽有四只脚，自己不会走 (打一家具)", a: "桌子" },
+            { q: "独木造高楼，没瓦没砖头，人在水下走，水在人上流 (打一日常用品)", a: "雨伞" },
+            { q: "左一片，右一片，摸得着，看不见 (打一人体器官)", a: "耳朵" },
+            { q: "黑黑一间房，平时不开窗，窗子一打开，捉进小影像 (打一物品)", a: "照相机" }
+            
+            { q: "十五天 (打一字)", a: "胖 (半个月=半月=胖)" },
+            { q: "元宵 (打一成语)", a: "一朝一夕" },
+            { q: "红公鸡，绿尾巴，身体钻到地底下 (打一植物)", a: "红萝卜" },
+            { q: "平日不思，中秋想你，有方有圆，甜甜蜜蜜 (打一食品)", a: "月饼" }, // 虽然是元宵，但也可以猜相关
+            { q: "白糖梅子真稀奇 (打一食物)", a: "元宵" },
+            { q: "左手五个，右手五个。拿去十个，还剩十个 (打一日常用品)", a: "手套" },
+            { q: "千条线，万条线，掉到水里看不见 (打一自然现象)", a: "雨" },
+            { q: "一点一横长，一撇到南洋，南洋有个人，只有一寸长 (打一字)", a: "府" },
+            { q: "画时圆，写时方，冬时短，夏时长 (打一字)", a: "日" },
+            { q: "上边毛，下边毛，中间一颗黑葡萄 (打一人体器官)", a: "眼睛" }
+        ];
+
+        let currentIndex = 0;
+
+        // 初始化
+        function init() {
+            createBgLanterns();
+            nextRiddle(); // 随机开始
+        }
+
+        // 显示当前谜题
+        function renderRiddle() {
+            const qEl = document.getElementById('question');
+            const aEl = document.getElementById('answer-text');
+            const idEl = document.getElementById('riddle-id');
+            const answerBox = document.getElementById('answer');
+
+            // 隐藏上一个答案
+            answerBox.classList.remove('show');
+            
+            // 设置新内容
+            idEl.innerText = currentIndex + 1; // 只是个序号显示，不一定非要对应数组索引
+            qEl.innerText = riddles[currentIndex].q;
+            aEl.innerText = riddles[currentIndex].a;
+        }
+
+        // 切换答案显示/隐藏
+        function toggleAnswer() {
+            const answerBox = document.getElementById('answer');
+            if (answerBox.classList.contains('show')) {
+                answerBox.classList.remove('show');
+            } else {
+                answerBox.classList.add('show');
+            }
+        }
+
+        // 下一题（随机不重复，直到循环完一遍）
+        function nextRiddle() {
+            // 简单的随机逻辑
+            const randomIndex = Math.floor(Math.random() * riddles.length);
+            currentIndex = randomIndex;
+            renderRiddle();
+        }
+
+        // 生成背景漂浮灯笼效果
+        function createBgLanterns() {
+            const container = document.getElementById('bg-effects');
+            for(let i=0; i<10; i++) {
+                const el = document.createElement('div');
+                el.classList.add('bg-lantern');
+                // 随机位置和大小
+                const size = Math.random() * 20 + 10;
+                el.style.width = size + 'px';
+                el.style.height = size * 1.4 + 'px';
+                el.style.left = Math.random() * 100 + 'vw';
+                el.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                el.style.animationDelay = (Math.random() * 5) + 's';
+                container.appendChild(el);
+            }
+        }
+
+        // 启动
+        window.onload = init;
+
+    </script>
+</body>
+</html>

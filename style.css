@@ -3,6 +3,7 @@
     --accent-gold: #FFD700;
     --deep-gold: #FF8C00;
     --glass-bg: rgba(0, 0, 0, 0.55);
+    --locked-gray: #666;
 }
 
 body, html {
@@ -41,7 +42,7 @@ body, html {
 }
 
 .guide-header { text-align: center; margin-bottom: 50px; }
-.guide-tagline { color: rgba(255,215,0,0.6); letter-spacing: 4px; font-size: 0.8rem; }
+.guide-tagline { color: rgba(255,215,0,0.6); letter-spacing: 4px; font-size: 0.9rem; margin-top: 10px;}
 
 .lantern { font-size: 50px; animation: swing 2.5s infinite ease-in-out; display: inline-block; }
 
@@ -49,7 +50,7 @@ body, html {
     font-size: 2.8rem; font-weight: 900;
     background: linear-gradient(to bottom, #FFF720 0%, var(--accent-gold) 50%, var(--deep-gold) 100%);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    margin: 15px 0;
+    margin: 10px 0;
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
 }
 
@@ -57,38 +58,101 @@ body, html {
 .nav-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 25px;
+    gap: 20px;
     width: 100%;
-    max-width: 960px;
+    max-width: 800px;
 }
 
 /* 卡片样式 */
 .nav-item {
     background: var(--glass-bg);
     backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 215, 0, 0.4);
-    border-radius: 24px;
-    padding: 30px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 20px;
+    padding: 25px;
     display: flex;
     align-items: center;
     text-decoration: none;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative; /* 为锁图标定位 */
 }
 
-.nav-item:hover {
-    transform: translateY(-8px);
-    border-color: var(--accent-gold);
-    background: rgba(139, 0, 0, 0.7);
-    box-shadow: 0 15px 35px rgba(255, 215, 0, 0.2);
+/* 悬停效果 (桌面端) */
+@media (hover: hover) {
+    .nav-item:hover {
+        transform: translateY(-5px);
+        border-color: var(--accent-gold);
+        background: rgba(139, 0, 0, 0.7);
+        box-shadow: 0 10px 25px rgba(255, 215, 0, 0.15);
+    }
 }
 
-.item-icon { font-size: 45px; margin-right: 25px; filter: drop-shadow(0 0 10px var(--accent-gold)); }
-.item-info h3 { margin: 0; color: var(--accent-gold); font-size: 1.3rem; }
-.item-info p { margin: 8px 0 0; color: rgba(255,255,255,0.7); font-size: 0.9rem; }
+/* 触摸点击效果 (移动端) */
+.nav-item:active {
+    transform: scale(0.98);
+    background: rgba(139, 0, 0, 0.8);
+    transition: transform 0.1s;
+}
 
-@keyframes swing { 0%, 100% { transform: rotate(-12deg); } 50% { transform: rotate(12deg); } }
+.item-icon { font-size: 40px; margin-right: 20px; filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.4)); }
+.item-info h3 { margin: 0; color: var(--accent-gold); font-size: 1.2rem; }
+.item-info p { margin: 5px 0 0; color: rgba(255,255,255,0.7); font-size: 0.85rem; line-height: 1.4; }
+
+/* ------------------- */
+/* 锁定状态样式 (新增) */
+/* ------------------- */
+.nav-item.locked {
+    filter: grayscale(100%);
+    opacity: 0.75;
+    cursor: not-allowed;
+    border-color: #555;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+/* 锁定后禁用原本的悬停效果 */
+.nav-item.locked:hover, .nav-item.locked:active {
+    transform: none;
+    box-shadow: none;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+/* 锁图标 */
+.nav-item.locked::after {
+    content: "🔒";
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 20px;
+    opacity: 0.8;
+}
+
+/* Toast 提示框样式 */
+#toast-msg {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 50px;
+    z-index: 10000;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 14px;
+    border: 1px solid rgba(255, 215, 0, 0.5);
+    backdrop-filter: blur(8px);
+    text-align: center;
+    width: max-content;
+    max-width: 80%;
+}
+
+/* 动画定义 */
+@keyframes swing { 0%, 100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
 
 @media (max-width: 480px) {
     .art-name { font-size: 2.2rem; }
     .nav-grid { grid-template-columns: 1fr; }
+    .nav-item { padding: 20px; }
 }
