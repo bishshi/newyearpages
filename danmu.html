@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>马年新春弹幕</title>
+    <script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.min.js"></script>
+    <style>
+        /* --- 1. 全局样式 --- */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: linear-gradient(135deg, #800000 0%, #A52A2A 50%, #FF4500 100%);
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* --- 2. 背景文字 --- */
+        .bg-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-text {
+            font-size: 18vw;
+            font-weight: 900;
+            color: rgba(255, 215, 0, 0.08); /* 淡金色背景字 */
+            font-family: 'KaiTi', 'STKaiti', serif;
+            user-select: none;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        /* --- 3. 弹幕舞台 --- */
+        .danmaku-stage {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            transform: translateZ(0); /* 开启GPU加速 */
+        }
+
+        /* --- 4. 弹幕本体 --- */
+        .danmaku-item {
+            position: absolute;
+            left: 100%; /* 初始位置在屏幕外 */
+            white-space: nowrap;
+            color: #fff; /* 默认白色 */
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            will-change: transform;
+            transition: color 0.3s, transform 0.2s;
+        }
+
+        /* 【样式修改】高赞：纯金字，无边框 */
+        .danmaku-item.super-hot {
+            color: #FFD700 !important;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+            z-index: 20;
+        }
+
+        /* 动画定义 */
+        @keyframes flyLeft {
+            from { transform: translateX(0); }
+            to { transform: translateX(-150vw); } /* 确保完全移出 */
+        }
+
+        /* 交互核心：悬停/点击时暂停动画 */
+        .danmaku-item:hover,
+        .danmaku-item:active {
+            z-index: 100 !important;
+            animation-play-state: paused !important; /* CSS暂停大法 */
+            filter: brightness(1.1);
+        }
+
+        /* --- 5. 详情小黑框 --- */
+        .dm-info {
+            opacity: 0;
+            visibility: hidden;
+            position: absolute;
+            top: 100%;
+            margin-top: 4px;
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            padding: 5px 12px;
+            font-size: 13px;
+            color: #fff;
+            text-shadow: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(5px);
+            transition: all 0.2s;
+            pointer-events: auto;
+            min-width: 130px;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .danmaku-item:hover .dm-info {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        /* 高赞弹幕的详情框也带点金色 */
+        .danmaku-item.super-hot .dm-info {
+            border-color: rgba(255, 215, 0, 0.4);
+        }
+
+        .nick-name {
+            color: #ddd;
+            font-size: 12px;
+            max-width: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .danmaku-item.super-hot .nick-name {
+            color: #FFD700;
+        }
+
+        .like-btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+            color: #fff;
+            padding: 2px 8px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+
+        .like-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .like-btn.liked {
+            color: #FFD700;
+            border-color: #FFD700;
+        }
+
+        /* --- 6. 底部状态栏 --- */
+        .control-panel {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            z-index: 200;
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+            text-align: right;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-layer">
+        <div class="bg-text">马到<br>成功</div>
+    </div>
+
+    <div id="danmaku-stage" class="danmaku-stage"></div>
+    
+    <div class="control-panel">
+        <div>悬停或点击弹幕可点赞</div>
+        <div id="status-text">连接中...</div>
+    </div>
+
+    <script>
+        // ================= 配置区域 =================
+        const CONFIG = {
+            // 1. Twikoo 环境 ID
+            twikooEnvId: 'https://comment.biss.click', 
+            
+            // 2. 【关键】指定采集页面的路径
+            // 如果你在 https://blog.com/2025/wishing/ 初始化了评论区
+            // 这里就填 '/2025/wishing/'。留空 '' 则采集全站。
+            targetPath: '2026-greeting', 
+
+            // 3. 视觉与轨道
+            baseSize: 22,       // 基础字号
+            maxSize: 60,        // 最大字号
+            trackHeight: 65,    // 轨道高度 (px)，需大于最大字号防止重叠
+            
+            // 4. 速度 (像素/秒)
+            minSpeed: 100,      // 慢
+            maxSpeed: 180,      // 快
+            
+            // 5. 高赞阈值 (变成金色)
+            hotThreshold: 10
+        };
+
+        const FALLBACK_DATA = [
+            { text: "马年大吉！", nick: "系统", like: 88 },
+            { text: "身体健康，万事如意", nick: "福星", like: 66 },
+            { text: "财源广进", nick: "财神", like: 128 },
+            { text: "代码 0 Error", nick: "Dev", like: 1024 },
+            { text: "龙马精神", nick: "成语君", like: 20 },
+            { text: "许愿明年暴富", nick: "锦鲤", like: 9 },
+            { text: "新年快乐", nick: "Twikoo", like: 45 }
+        ];
+
+        let danmakuPool = [];
+        let syncTimers = {}; // 防抖计时器
+        let tracks = [];     // 轨道占用状态
+
+        // --- 初始化轨道 ---
+        function initTracks() {
+            const h = window.innerHeight;
+            const count = Math.floor(h / CONFIG.trackHeight);
+            tracks = new Array(count).fill(0); // 存的是“该轨道何时变空闲”的时间戳
+        }
+        window.onresize = initTracks;
+
+        // --- 1. 获取数据 ---
+        async function initData() {
+            initTracks();
+            let items = [];
+            const statusEl = document.getElementById('status-text');
+
+            try {
+                if (CONFIG.twikooEnvId !== 'YOUR_ENV_ID_HERE') {
+                    // 构建查询参数
+                    const params = {
+                        envId: CONFIG.twikooEnvId,
+                        pageSize: 80,
+                        includeReply: false
+                    };
+                    // 如果指定了路径，添加过滤
+                    if (CONFIG.targetPath) {
+                        params.urls = [CONFIG.targetPath];
+                    }
+
+                    const res = await twikoo.getRecentComments(params);
+                    
+                    items = res.map(item => ({
+                        id: item._id,
+                        text: item.commentText.replace(/<[^>]+>/g, "").trim().substring(0, 35),
+                        nick: item.nick || "网友",
+                        like: item.vote || item.like || 0
+                    })).filter(i => i.text);
+
+                    statusEl.innerText = `已加载 ${items.length} 条评论`;
+                }
+            } catch (e) {
+                console.log("离线模式", e);
+                statusEl.innerText = "离线演示模式";
+            }
+
+            // 填充不足的数据
+            if (items.length < 30) {
+                while (items.length < 30) {
+                    const fb = FALLBACK_DATA[Math.floor(Math.random() * FALLBACK_DATA.length)];
+                    items.push({ ...fb, id: null, like: Math.floor(Math.random() * 50) });
+                }
+            }
+            danmakuPool = items;
+            startLoop();
+        }
+
+        // --- 2. 创建弹幕 (核心防重叠逻辑) ---
+        function createDanmaku() {
+            const stage = document.getElementById('danmaku-stage');
+            if (!danmakuPool.length) return;
+
+            // A. 寻找空闲轨道
+            const now = Date.now();
+            const validTracks = tracks
+                .map((t, i) => ({ idx: i, freeTime: t }))
+                .filter(item => now >= item.freeTime); // 当前时间 > 解锁时间
+
+            if (validTracks.length === 0) return; // 全忙，下次一定
+
+            // 随机选一个空轨道
+            const trackObj = validTracks[Math.floor(Math.random() * validTracks.length)];
+            const trackIdx = trackObj.idx;
+
+            // B. 准备数据
+            const data = danmakuPool[Math.floor(Math.random() * danmakuPool.length)];
+            
+            // 字号计算
+            let fontSize = CONFIG.baseSize + (data.like / 4);
+            if (fontSize > CONFIG.maxSize) fontSize = CONFIG.maxSize;
+
+            // C. 创建 DOM
+            const el = document.createElement('div');
+            el.className = 'danmaku-item';
+            if (data.like >= CONFIG.hotThreshold) el.classList.add('super-hot');
+
+            el.style.fontSize = `${fontSize}px`;
+            el.style.top = `${trackIdx * CONFIG.trackHeight + 10}px`; // 绝对定位轨道
+
+            el.innerHTML = `
+                <span class="dm-text">${data.text}</span>
+                <div class="dm-info">
+                    <span class="nick-name">@${data.nick}</span>
+                    <button class="like-btn">👍 <span class="count">${data.like}</span></button>
+                </div>
+            `;
+            stage.appendChild(el); // 先插入，为了算宽度
+
+            // D. 计算运动参数
+            const elWidth = el.offsetWidth;
+            const screenW = window.innerWidth;
+            const speed = Math.random() * (CONFIG.maxSpeed - CONFIG.minSpeed) + CONFIG.minSpeed;
+            
+            // 总路程 = 屏幕宽 + 自身宽 + 稍微多跑点(50px)
+            const distance = screenW + elWidth + 50;
+            const duration = distance / speed; // 秒
+
+            // 设置 CSS 动画
+            el.style.animation = `flyLeft ${duration}s linear forwards`;
+            
+            // 动画结束清理
+            el.addEventListener('animationend', () => el.remove());
+
+            // E. 锁定轨道
+            // 轨道解锁时间 = 现在 + (自身宽度 + 间距) / 速度
+            // 这样只有当屁股完全离开起跑线，下一辆车才能进这个赛道
+            const safeGap = 60; // 间距 px
+            const timeToEnter = ((elWidth + safeGap) / speed) * 1000;
+            tracks[trackIdx] = now + timeToEnter;
+
+            // F. 绑定交互
+            const likeBtn = el.querySelector('.like-btn');
+            el.querySelector('.dm-info').addEventListener('click', e => e.stopPropagation());
+
+            likeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                data.like++;
+                likeBtn.querySelector('.count').innerText = data.like;
+                likeBtn.classList.add('liked');
+                
+                // 实时变金
+                if (data.like >= CONFIG.hotThreshold) el.classList.add('super-hot');
+
+                // 只有真实ID才同步
+                if (data.id) syncLike(data.id);
+            });
+        }
+
+        // --- 3. 防抖同步 ---
+        function syncLike(cid) {
+            if (syncTimers[cid]) clearTimeout(syncTimers[cid]);
+            syncTimers[cid] = setTimeout(async () => {
+                try {
+                    await twikoo.linkComment({ id: cid, envId: CONFIG.twikooEnvId });
+                    console.log('同步成功:', cid);
+                } catch (e) {
+                    console.error('同步失败:', e);
+                }
+                delete syncTimers[cid];
+            }, 2000); // 2秒无操作后上传
+        }
+
+        function startLoop() {
+            // 开局爆发
+            for(let i=0; i<8; i++) setTimeout(createDanmaku, i * 200);
+            
+            setInterval(() => {
+                if (!document.hidden) createDanmaku();
+            }, 500); // 发射频率加快一点，因为有轨道检测，不用担心重叠
+        }
+
+        window.onload = initData;
+
+    </script>
+</body>
+</html>
