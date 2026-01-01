@@ -86,16 +86,29 @@ body, html {
 /* JS 添加此 active 类后显示弹窗 */
 .modal-overlay.active { display: flex !important; }
 
-/* === 截图卡片样式 === */
+/* === style.css 中找到此处进行替换 === */
+
+/* 截图卡片样式 - 已加宽 */
 #captureArea {
     background: linear-gradient(145deg, #9b0000, #600000);
     border: 3px solid var(--accent-gold);
-    border-radius: 20px;
-    padding: 40px 30px;
-    width: 80%; max-width: 320px;
+    border-radius: 24px; /*稍微增大圆角*/
+    
+    /* 修改点 A: 调整内边距 */
+    /* 上下减少到 30px，左右增加到 40px，让视觉更横向 */
+    padding: 30px 40px; 
+    
+    /* 修改点 B: 调整宽度限制 */
+    /* 宽度占比提高到 92%，最大宽度增加到 450px */
+    width: 92%; 
+    max-width: 450px;
+    
     text-align: center;
     position: relative;
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.25); /* 增强一点光晕 */
+    
+    /* 确保截图时背景不透明 */
+    background-clip: padding-box;
 }
 /* 右下角 2026 水印 */
 #captureArea::after {
@@ -112,14 +125,28 @@ body, html {
 }
 .modal-overlay.active .modal-content-wrapper { transform: scale(1); opacity: 1; }
 
-.prize-title { color: #fff; font-size: 1rem; margin-bottom: 5px; opacity: 0.9; display: block; }
-.prize-text {
-    font-size: 2rem; color: var(--accent-gold);
-    margin: 20px 0; display: block; font-weight: bold;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    min-height: 60px; display: flex; align-items: center; justify-content: center;
+/* === style.css 中找到此处进行替换 === */
+
+.prize-title { 
+    color: #fff; 
+    font-size: 1.1rem; /* 稍微加大一点称呼 */
+    margin-bottom: 2px; /* 减少与奖品的间距 */
+    opacity: 0.9; 
+    display: block; 
 }
 
+.prize-text {
+    font-size: 2.2rem; /* 稍微加大奖品文字 */
+    color: var(--accent-gold);
+    
+    /* 修改点 C: 减少奖品文字上下的边距 */
+    margin: 10px 0 15px 0; 
+    
+    display: block; font-weight: bold;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    min-height: 50px; /* 稍微减小最小高度 */
+    display: flex; align-items: center; justify-content: center;
+}
 /* === 弹窗按钮组 === */
 .btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 25px; }
 .action-btn { border: none; padding: 10px 20px; border-radius: 20px; font-size: 0.9rem; cursor: pointer; font-weight: bold; }
