@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 2026 新年音乐精选 | 欢度春节</title>
+    <style>
+        /* --- 全局样式 --- */
+        :root {
+            --primary-red: #b90504;
+            --dark-red: #680000;
+            --gold: #f2c76e;
+            --light-gold: #fae3b4;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: linear-gradient(180deg, var(--dark-red) 0%, var(--primary-red) 100%);
+            color: var(--light-gold);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- 装饰性灯笼 (CSS绘制) --- */
+        .lantern-container {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            overflow: hidden;
+            height: 150px;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .lantern {
+            position: absolute;
+            width: 60px;
+            height: 50px;
+            background-color: #ff3333;
+            border-radius: 20px;
+            border-top: 4px solid var(--gold);
+            border-bottom: 4px solid var(--gold);
+            box-shadow: 0 0 20px rgba(255, 200, 0, 0.4);
+            animation: swing 3s infinite ease-in-out;
+        }
+        .lantern::after {
+            content: "";
+            position: absolute;
+            bottom: -20px;
+            left: 25px;
+            width: 4px;
+            height: 20px;
+            background: var(--gold);
+        }
+        .l-left { left: 10%; top: -10px; animation-delay: 0s; }
+        .l-right { right: 10%; top: -5px; animation-delay: 1s; }
+
+        @keyframes swing {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        /* --- 头部标题 --- */
+        header {
+            text-align: center;
+            margin-top: 60px;
+            margin-bottom: 20px;
+            z-index: 2;
+        }
+        h1 {
+            font-size: 2rem;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+        p.subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+
+        /* --- 视频主播放区 --- */
+        .main-player-wrapper {
+            width: 90%;
+            max-width: 800px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 12px;
+            border: 2px solid var(--gold);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 2;
+        }
+        
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 比例 */
+            height: 0;
+            overflow: hidden;
+            background: #000;
+            border-radius: 8px;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .current-info {
+            padding: 15px 5px 5px;
+            text-align: left;
+        }
+        .current-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff;
+        }
+        .current-source {
+            font-size: 0.9rem;
+            color: var(--gold);
+            margin-top: 5px;
+            display: inline-block;
+            border: 1px solid var(--gold);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* --- 播放列表 --- */
+        .playlist {
+            width: 90%;
+            max-width: 800px;
+            margin-top: 30px;
+            padding-bottom: 50px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            z-index: 2;
+        }
+
+        .video-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(242, 199, 110, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .video-card:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--gold);
+        }
+
+        .card-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        .card-info {
+            flex: 1;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-platform {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        /* --- 页脚 --- */
+        footer {
+            margin-top: auto;
+            padding: 20px;
+            text-align: center;
+            font-size: 0.8rem;
+            opacity: 0.6;
+            z-index: 2;
+        }
+
+        /* --- 移动端适配 --- */
+        @media (max-width: 600px) {
+            h1 { font-size: 1.5rem; }
+            .playlist { grid-template-columns: 1fr; }
+            .lantern { width: 40px; height: 35px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="lantern-container">
+        <div class="lantern l-left"></div>
+        <div class="lantern l-right"></div>
+    </div>
+
+    <header>
+        <h1>🎵 2026 新年音乐分享</h1>
+        <p class="subtitle">蛇年大吉 · 喜气洋洋</p>
+    </header>
+
+    <div class="main-player-wrapper">
+        <div class="video-container" id="videoContainer">
+            <div style="display:flex; align-items:center; justify-content:center; height:100%; color:#fff;">
+                点击下方列表播放视频
+            </div>
+        </div>
+        <div class="current-info">
+            <div class="current-title" id="currentTitle">请选择一个视频播放</div>
+            <span class="current-source" id="currentSource">来源平台</span>
+        </div>
+    </div>
+
+    <div class="playlist" id="playlist">
+        </div>
+
+    <footer>
+        <p>© 2026 新年快乐 | 分享自我的精选歌单</p>
+    </footer>
+
+    <script>
+        // ==========================================
+        // 核心配置区：在这里替换为你想要的视频链接
+        // ==========================================
+        
+        const videoList = [
+            {
+                title: "恭喜发财 - 刘德华 (必听经典)",
+                platform: "Bilibili",
+                // 注意：B站请使用 embed 代码中的 src 部分，或者直接复制 BV 号
+                // 下面是一个标准的B站嵌入代码示例
+                embedCode: `<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=393018479&bvid=BV1ad4y1V7wb&cid=971466390&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>`
+            },
+            {
+                title: "春节序曲 - 交响乐版",
+                platform: "Bilibili",
+                // 网易云音乐生成外链播放器代码 (注意：部分歌曲因版权无法生成外链)
+                embedCode: `<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=808428011&bvid=BV1t34y1q7CS&cid=491024706&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>`
+            },
+            {
+                title: "难忘今宵 - 李谷一",
+                platform: "Bilibili",
+                // 腾讯视频嵌入代码示例
+                embedCode: `<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=936206341&bvid=BV1ST4y1k7h4&cid=498376624&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>`
+            },
+            {
+                title: "好运来 - 祖海",
+                platform: "Bilibili",
+                embedCode: `<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=802136975&bvid=BV1ty4y1E7w9&cid=313232022&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>`
+            }
+        ];
+
+        // ==========================================
+        // 逻辑控制区 (无需修改)
+        // ==========================================
+
+        const playlistEl = document.getElementById('playlist');
+        const videoContainer = document.getElementById('videoContainer');
+        const currentTitleEl = document.getElementById('currentTitle');
+        const currentSourceEl = document.getElementById('currentSource');
+
+        // 初始化列表
+        function initPlaylist() {
+            videoList.forEach((video, index) => {
+                const card = document.createElement('div');
+                card.className = 'video-card';
+                card.onclick = () => playVideo(index);
+                
+                // 根据平台显示不同图标 (Emoji)
+                let icon = '📺';
+                if(video.platform.includes('Bilibili') || video.platform.includes('B站')) icon = '🅱️';
+                if(video.platform.includes('网易')) icon = '☁️';
+                if(video.platform.includes('腾讯')) icon = '🐧';
+
+                card.innerHTML = `
+                    <div class="card-icon">${icon}</div>
+                    <div class="card-info">
+                        <div class="card-title">${video.title}</div>
+                        <div class="card-platform">${video.platform}</div>
+                    </div>
+                    <div style="font-size:1.2rem;">▶</div>
+                `;
+                playlistEl.appendChild(card);
+            });
+
+            // 自动加载第一个视频
+            if(videoList.length > 0) {
+                playVideo(0);
+            }
+        }
+
+        // 播放视频
+        function playVideo(index) {
+            const video = videoList[index];
+            
+            // 更新信息
+            currentTitleEl.innerText = video.title;
+            currentSourceEl.innerText = video.platform;
+            
+            // 注入嵌入代码
+            // 针对网易云音乐做特殊处理，因为它的iframe通常很窄
+            if(video.platform.includes('网易') || video.embedCode.includes('music.163.com')) {
+                // 保持容器比例，但让iframe居中
+                videoContainer.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;background:#333;">${video.embedCode}</div>`;
+            } else {
+                // 视频类直接填满
+                videoContainer.innerHTML = video.embedCode;
+            }
+            
+            // 简单的选中效果
+            const cards = document.querySelectorAll('.video-card');
+            cards.forEach(c => c.style.borderColor = 'rgba(242, 199, 110, 0.3)');
+            cards[index].style.borderColor = '#fff';
+        }
+
+        // 启动
+        initPlaylist();
+
+    </script>
+</body>
+</html>
