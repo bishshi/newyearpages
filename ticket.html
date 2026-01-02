@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2026新春全自定义车票-修复版</title>
+    <title>2026新春全自定义车票-灯笼版</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700&family=Roboto+Mono:wght@500;700&display=swap');
 
-        /* --- 修复背景显示问题的核心代码 --- */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             margin: 0;
@@ -19,17 +18,13 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            
-            /* 1. 设置底色，防止背景图加载失败变白 */
+            /* 背景：深蓝夜空 */
             background-color: #1a1a2e; 
-            
-            /* 2. 正确的多重背景写法 (上层在先，下层在后) */
             background-image: 
-                radial-gradient(circle at 20% 20%, rgba(255, 215, 0, 0.08) 0%, transparent 40%), /* 金色光斑 */
-                radial-gradient(circle at 80% 80%, rgba(200, 50, 50, 0.08) 0%, transparent 40%), /* 红色光斑 */
-                radial-gradient(circle at 50% 0%, #2b3a55 0%, #1a1a2e 100%); /* 深蓝夜空底座 */
-                
-            background-attachment: fixed; /* 固定背景 */
+                radial-gradient(circle at 20% 20%, rgba(255, 215, 0, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(200, 50, 50, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 50% 0%, #2b3a55 0%, #1a1a2e 100%);
+            background-attachment: fixed;
         }
 
         h2 {
@@ -41,7 +36,6 @@
             letter-spacing: 1px;
         }
 
-        /* --- 缩放容器 --- */
         #scale-container {
             width: 100%;
             max-width: 640px;
@@ -61,38 +55,54 @@
             transform-origin: top left;
             border-radius: 12px;
             background-color: #e4f2ff;
+            /* 柔和的底纹，无强光晕 */
             background-image: 
-                radial-gradient(circle at 40% 40%, rgba(255,255,255,1) 0%, transparent 60%),
+                radial-gradient(circle at 40% 40%, rgba(255,255,255,0.4) 0%, transparent 60%),
                 repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(0, 80, 200, 0.03) 3px, rgba(0, 80, 200, 0.03) 6px);
             color: #333;
             padding: 25px 30px;
             box-sizing: border-box;
             user-select: none;
             border: 1px solid #cce0ff;
+            overflow: hidden;
         }
 
-        .serial-number { position: absolute; top: 20px; left: 25px; font-family: "Roboto Mono", monospace; color: #d80000; font-size: 15px; font-weight: bold; }
-        .check-gate { position: absolute; top: 20px; right: 25px; font-size: 14px; font-weight: bold; }
+        /* --- 灯笼水印样式 --- */
+        .watermark-lantern {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 280px; /* 大小适中 */
+            height: auto;
+            /* 使用极淡的红色，模拟透光水印 */
+            color: rgba(220, 20, 20, 0.06); 
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 票面元素 */
+        .serial-number { position: absolute; top: 20px; left: 25px; font-family: "Roboto Mono", monospace; color: #d80000; font-size: 15px; font-weight: bold; z-index: 2; }
+        .check-gate { position: absolute; top: 20px; right: 25px; font-size: 14px; font-weight: bold; z-index: 2; }
         .check-gate span { font-size: 20px; }
-        .station-row { margin-top: 40px; display: flex; justify-content: space-between; align-items: baseline; height: 60px; }
+        .station-row { margin-top: 40px; display: flex; justify-content: space-between; align-items: baseline; height: 60px; position: relative; z-index: 2; }
         .station { font-size: 44px; font-weight: 900; font-family: "SimHei", sans-serif; color: #000; letter-spacing: -1px; white-space: nowrap; }
         .train-center { text-align: center; flex: 1; display: flex; flex-direction: column; align-items: center; }
         .train-code { font-family: "Roboto Mono", monospace; font-size: 24px; font-weight: bold; }
         .arrow-icon { font-size: 16px; color: #666; transform: scaleX(2); margin-top: -2px; }
-        .info-row { margin-top: 25px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .info-row { margin-top: 25px; display: flex; justify-content: space-between; align-items: flex-end; position: relative; z-index: 2; }
         .date-section { font-family: "Roboto Mono", sans-serif; font-size: 18px; font-weight: 600; line-height: 1.5; }
         .price-section { font-size: 18px; font-weight: bold; }
         .price-section span { font-size: 28px; }
-        .seat-row { margin-top: 25px; font-size: 17px; font-weight: 600; display: flex; gap: 15px; align-items: baseline; }
+        .seat-row { margin-top: 25px; font-size: 17px; font-weight: 600; display: flex; gap: 15px; align-items: baseline; position: relative; z-index: 2; }
         .seat-class-label { font-size: 16px; font-weight: normal; margin-left: 5px; }
-        .passenger-row { margin-top: 15px; display: flex; align-items: baseline; }
+        .passenger-row { margin-top: 15px; display: flex; align-items: baseline; position: relative; z-index: 2; }
         .passenger-name { font-size: 18px; font-weight: bold; margin-right: 15px; }
         .passenger-id { font-size: 14px; font-family: "Roboto Mono", monospace; color: #555; }
-        .bottom-bar { position: absolute; bottom: 0; left: 0; width: 100%; height: 36px; background-color: #fff; border-top: 1px dashed #ccc; display: flex; align-items: center; padding-left: 25px; font-size: 12px; color: #666; white-space: nowrap; overflow: hidden; }
-        .qr-area { position: absolute; bottom: 45px; right: 25px; width: 84px; height: 84px; background: #fff; padding: 3px; display: flex; align-items: center; justify-content: center; }
+        .bottom-bar { position: absolute; bottom: 0; left: 0; width: 100%; height: 36px; background-color: #fff; border-top: 1px dashed #ccc; display: flex; align-items: center; padding-left: 25px; font-size: 12px; color: #666; white-space: nowrap; overflow: hidden; z-index: 2; }
+        .qr-area { position: absolute; bottom: 45px; right: 25px; width: 84px; height: 84px; background: #fff; padding: 3px; display: flex; align-items: center; justify-content: center; z-index: 2; }
         .qr-area img { width: 100%; height: auto; }
         .stamp { position: absolute; right: 120px; bottom: 60px; width: 88px; height: 88px; border: 3px solid rgba(220, 20, 20, 0.7); border-radius: 50%; color: rgba(220, 20, 20, 0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; transform: rotate(-15deg); z-index: 1; mix-blend-mode: multiply; background: radial-gradient(rgba(220,20,20,0.05), transparent); pointer-events: none; line-height: 1.1; }
-        .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 160px; font-weight: 900; color: rgba(0, 60, 150, 0.04); pointer-events: none; z-index: 0; }
 
         /* --- 控制面板 --- */
         .controls {
@@ -115,17 +125,10 @@
             color: #ffda77;
         }
 
-        .control-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-        
+        .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .control-item { display: flex; flex-direction: column; }
         .control-item.full { grid-column: span 2; }
-        
         label { font-size: 12px; color: #aaa; margin-bottom: 4px; }
-        
         input {
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -137,7 +140,6 @@
             box-sizing: border-box;
         }
         input:focus { outline: none; border-color: #ffda77; background: rgba(0,0,0,0.5); }
-
         .btn-download {
             grid-column: span 2;
             margin-top: 15px;
@@ -153,17 +155,19 @@
             text-align: center;
         }
         .btn-download:active { opacity: 0.9; transform: scale(0.98); }
-        
         .tips { font-size: 12px; color: #888; text-align: center; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <h2>🧨 2026新春 · 专属定制</h2>
+    <h2>🏮 2026新春 · 团圆号</h2>
 
     <div id="scale-container">
         <div class="ticket" id="ticket-node">
-            <div class="watermark">CR</div>
+            <svg class="watermark-lantern" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor">
+                <path d="M416 128H352V96C352 78.33 337.7 64 320 64H192C174.3 64 160 78.33 160 96V128H96C60.65 128 32 156.7 32 192V320C32 355.3 60.65 384 96 384H160V432C160 449.7 174.3 464 192 464H320C337.7 464 352 449.7 352 432V384H416C451.3 384 480 355.3 480 320V192C480 156.7 451.3 128 416 128zM304 416H208V384H304V416zM432 320C432 328.8 424.8 336 416 336H96C87.16 336 80 328.8 80 320V192C80 183.2 87.16 176 96 176H416C424.8 176 432 183.2 432 192V320zM304 128H208V112H304V128z M256 192 C269.3 192 280 202.7 280 216 V296 C280 309.3 269.3 320 256 320 C242.7 320 232 309.3 232 296 V216 C232 202.7 242.7 192 256 192 Z"/>
+            </svg>
+
             <div class="serial-number" id="disp-serial">No.2026-0217-CNY</div>
             <div class="check-gate"><span id="disp-gate">26</span>检票口</div>
 
