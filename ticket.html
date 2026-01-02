@@ -2,315 +2,168 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026春节全自定义车票</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>2026新春全自定义车票-修复版</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
-        /* --- 字体与基础设置 --- */
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700&family=Roboto+Mono:wght@500;700&display=swap');
 
-        :root {
-            --ticket-bg: #e0f0ff;
-            --text-main: #333;
-            --red-color: #d80000;
-        }
-
+        /* --- 修复背景显示问题的核心代码 --- */
         body {
-            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
-            background-color: #1a1a1a;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 20px 15px;
+            color: #eee;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            color: #ddd;
+            
+            /* 1. 设置底色，防止背景图加载失败变白 */
+            background-color: #1a1a2e; 
+            
+            /* 2. 正确的多重背景写法 (上层在先，下层在后) */
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(255, 215, 0, 0.08) 0%, transparent 40%), /* 金色光斑 */
+                radial-gradient(circle at 80% 80%, rgba(200, 50, 50, 0.08) 0%, transparent 40%), /* 红色光斑 */
+                radial-gradient(circle at 50% 0%, #2b3a55 0%, #1a1a2e 100%); /* 深蓝夜空底座 */
+                
+            background-attachment: fixed; /* 固定背景 */
         }
 
         h2 {
-            margin-bottom: 20px;
-            color: #ffcc00;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            margin: 0 0 20px;
+            color: #ffda77;
+            font-size: 1.5rem;
+            text-align: center;
+            text-shadow: 0 2px 10px rgba(255, 218, 119, 0.3);
             letter-spacing: 1px;
         }
 
-        /* --- 车票容器 --- */
-        .ticket-wrapper {
-            background-color: #fff;
-            padding: 8px;
-            border-radius: 12px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            margin-bottom: 30px;
+        /* --- 缩放容器 --- */
+        #scale-container {
+            width: 100%;
+            max-width: 640px;
+            margin: 0 auto 20px;
+            position: relative;
+            height: 400px; 
+            overflow: hidden;
+            filter: drop-shadow(0 15px 30px rgba(0,0,0,0.5));
         }
 
-        /* --- 车票主体 --- */
+        /* --- 车票本体 --- */
         .ticket {
             width: 640px;
             height: 400px;
-            position: relative;
-            border-radius: 8px;
-            overflow: hidden;
-            background-color: var(--ticket-bg);
-            /* 仿真底纹：放射状光晕 + 微弱斜线防伪纹 */
+            position: absolute;
+            top: 0; left: 0;
+            transform-origin: top left;
+            border-radius: 12px;
+            background-color: #e4f2ff;
             background-image: 
-                radial-gradient(circle at 40% 40%, rgba(255,255,255,0.9) 0%, transparent 60%),
-                repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(0, 80, 200, 0.04) 3px, rgba(0, 80, 200, 0.04) 6px);
-            color: var(--text-main);
+                radial-gradient(circle at 40% 40%, rgba(255,255,255,1) 0%, transparent 60%),
+                repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(0, 80, 200, 0.03) 3px, rgba(0, 80, 200, 0.03) 6px);
+            color: #333;
             padding: 25px 30px;
             box-sizing: border-box;
             user-select: none;
+            border: 1px solid #cce0ff;
         }
 
-        /* 顶部红色序列号 */
-        .serial-number {
-            position: absolute;
-            top: 20px;
-            left: 25px;
-            font-family: "Roboto Mono", monospace;
-            color: var(--red-color);
-            font-size: 15px;
-            font-weight: bold;
-            letter-spacing: 0.5px;
-        }
-
-        /* 右上角检票口 */
-        .check-gate {
-            position: absolute;
-            top: 20px;
-            right: 25px;
-            font-size: 14px;
-            font-weight: bold;
-        }
+        .serial-number { position: absolute; top: 20px; left: 25px; font-family: "Roboto Mono", monospace; color: #d80000; font-size: 15px; font-weight: bold; }
+        .check-gate { position: absolute; top: 20px; right: 25px; font-size: 14px; font-weight: bold; }
         .check-gate span { font-size: 20px; }
-
-        /* 车站大字 */
-        .station-row {
-            margin-top: 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            height: 60px;
-        }
-
-        .station {
-            font-size: 44px;
-            font-weight: 900;
-            font-family: "SimHei", "Heiti SC", sans-serif;
-            color: #000;
-            letter-spacing: -1px;
-        }
-
-        /* 中间车次箭头 */
-        .train-center {
-            text-align: center;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .train-code {
-            font-family: "Roboto Mono", monospace;
-            font-size: 24px;
-            font-weight: bold;
-            line-height: 1.2;
-        }
-
-        .arrow-icon {
-            font-size: 16px;
-            color: #666;
-            transform: scaleX(2); /* 拉长箭头 */
-            margin-top: -2px;
-        }
-
-        /* 时间与价格行 */
-        .info-row {
-            margin-top: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-
-        .date-section {
-            font-family: "Roboto Mono", "SimHei", monospace;
-            font-size: 18px;
-            font-weight: 600;
-            line-height: 1.5;
-        }
-
-        .price-section {
-            font-size: 18px;
-            font-weight: bold;
-        }
+        .station-row { margin-top: 40px; display: flex; justify-content: space-between; align-items: baseline; height: 60px; }
+        .station { font-size: 44px; font-weight: 900; font-family: "SimHei", sans-serif; color: #000; letter-spacing: -1px; white-space: nowrap; }
+        .train-center { text-align: center; flex: 1; display: flex; flex-direction: column; align-items: center; }
+        .train-code { font-family: "Roboto Mono", monospace; font-size: 24px; font-weight: bold; }
+        .arrow-icon { font-size: 16px; color: #666; transform: scaleX(2); margin-top: -2px; }
+        .info-row { margin-top: 25px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .date-section { font-family: "Roboto Mono", sans-serif; font-size: 18px; font-weight: 600; line-height: 1.5; }
+        .price-section { font-size: 18px; font-weight: bold; }
         .price-section span { font-size: 28px; }
-
-        /* 座位行 */
-        .seat-row {
-            margin-top: 25px;
-            font-size: 17px;
-            font-weight: 600;
-            display: flex;
-            gap: 15px;
-            align-items: baseline;
-        }
+        .seat-row { margin-top: 25px; font-size: 17px; font-weight: 600; display: flex; gap: 15px; align-items: baseline; }
         .seat-class-label { font-size: 16px; font-weight: normal; margin-left: 5px; }
-
-        /* 乘客行 */
-        .passenger-row {
-            margin-top: 15px;
-            display: flex;
-            align-items: baseline;
-        }
+        .passenger-row { margin-top: 15px; display: flex; align-items: baseline; }
         .passenger-name { font-size: 18px; font-weight: bold; margin-right: 15px; }
         .passenger-id { font-size: 14px; font-family: "Roboto Mono", monospace; color: #555; }
-
-        /* 底部广告条 */
-        .bottom-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 36px;
-            background-color: #fff;
-            border-top: 1px dashed #ccc;
-            display: flex;
-            align-items: center;
-            padding-left: 25px;
-            font-size: 12px;
-            color: #666;
-        }
-
-        /* 二维码区域 */
-        .qr-area {
-            position: absolute;
-            bottom: 45px;
-            right: 25px;
-            width: 84px;
-            height: 84px;
-            background: #fff;
-            padding: 3px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .bottom-bar { position: absolute; bottom: 0; left: 0; width: 100%; height: 36px; background-color: #fff; border-top: 1px dashed #ccc; display: flex; align-items: center; padding-left: 25px; font-size: 12px; color: #666; white-space: nowrap; overflow: hidden; }
+        .qr-area { position: absolute; bottom: 45px; right: 25px; width: 84px; height: 84px; background: #fff; padding: 3px; display: flex; align-items: center; justify-content: center; }
         .qr-area img { width: 100%; height: auto; }
-
-        /* 红色印章 */
-        .stamp {
-            position: absolute;
-            right: 120px;
-            bottom: 60px;
-            width: 88px;
-            height: 88px;
-            border: 3px solid rgba(220, 20, 20, 0.7);
-            border-radius: 50%;
-            color: rgba(220, 20, 20, 0.9);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 18px;
-            transform: rotate(-15deg);
-            z-index: 1;
-            mix-blend-mode: multiply; /* 正片叠底效果 */
-            background: radial-gradient(rgba(220,20,20,0.05), transparent);
-            pointer-events: none;
-            line-height: 1.1;
-        }
-
-        /* 背景大水印 */
-        .watermark {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-30deg);
-            font-size: 160px;
-            font-weight: 900;
-            color: rgba(0, 60, 150, 0.04);
-            pointer-events: none;
-            z-index: 0;
-        }
+        .stamp { position: absolute; right: 120px; bottom: 60px; width: 88px; height: 88px; border: 3px solid rgba(220, 20, 20, 0.7); border-radius: 50%; color: rgba(220, 20, 20, 0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; transform: rotate(-15deg); z-index: 1; mix-blend-mode: multiply; background: radial-gradient(rgba(220,20,20,0.05), transparent); pointer-events: none; line-height: 1.1; }
+        .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 160px; font-weight: 900; color: rgba(0, 60, 150, 0.04); pointer-events: none; z-index: 0; }
 
         /* --- 控制面板 --- */
         .controls {
             width: 100%;
-            max-width: 660px;
-            background: #2b2b2b;
+            max-width: 640px;
+            background: rgba(30, 40, 60, 0.85); 
+            backdrop-filter: blur(12px);
             padding: 20px;
-            border-radius: 10px;
-            border: 1px solid #444;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            box-sizing: border-box;
         }
         
-        .controls h3 { color: #fff; margin-top: 0; border-bottom: 1px solid #555; padding-bottom: 10px; font-size: 16px; }
+        .controls h3 {
+            margin: 0 0 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+            font-size: 16px;
+            color: #ffda77;
+        }
 
         .control-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr 1fr;
             gap: 12px;
         }
-
+        
         .control-item { display: flex; flex-direction: column; }
         .control-item.full { grid-column: span 2; }
         
         label { font-size: 12px; color: #aaa; margin-bottom: 4px; }
         
         input {
-            background: #3a3a3a;
-            border: 1px solid #555;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             color: #fff;
             padding: 8px;
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
         }
-        input:focus { outline: none; border-color: #ffcc00; }
+        input:focus { outline: none; border-color: #ffda77; background: rgba(0,0,0,0.5); }
 
         .btn-download {
             grid-column: span 2;
             margin-top: 15px;
-            padding: 12px;
-            background: linear-gradient(135deg, #d80000, #b00000);
+            padding: 14px;
+            background: linear-gradient(135deg, #d80000, #900000);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            text-align: center;
         }
-        .btn-download:hover { transform: scale(1.02); }
-
-        /* 移动端适配 */
-        @media (max-width: 700px) {
-            .ticket { width: 100%; height: auto; aspect-ratio: 1.58; padding: 4%; }
-            .station { font-size: 6vw; }
-            .train-code { font-size: 4vw; }
-            .date-section { font-size: 2.8vw; }
-            .price-section span { font-size: 5vw; }
-            .price-section { font-size: 3vw; }
-            .seat-row { font-size: 3.2vw; margin-top: 3vw; }
-            .seat-class-label { font-size: 3vw; }
-            .passenger-row { font-size: 3.5vw; margin-top: 3vw; }
-            .passenger-id { font-size: 2.5vw; }
-            .bottom-bar { display: none; }
-            .qr-area { width: 14vw; height: 14vw; bottom: 8%; right: 4%; }
-            .stamp { width: 15vw; height: 15vw; font-size: 3vw; right: 22%; bottom: 10%; }
-            .check-gate span { font-size: 3.5vw; }
-            .check-gate { font-size: 2.5vw; top: 4%; right: 4%; }
-            .serial-number { font-size: 2.5vw; top: 4%; left: 4%; }
-        }
+        .btn-download:active { opacity: 0.9; transform: scale(0.98); }
+        
+        .tips { font-size: 12px; color: #888; text-align: center; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <h2>🚅 2026 新春自定义车票</h2>
+    <h2>🧨 2026新春 · 专属定制</h2>
 
-    <div class="ticket-wrapper">
+    <div id="scale-container">
         <div class="ticket" id="ticket-node">
             <div class="watermark">CR</div>
-            
             <div class="serial-number" id="disp-serial">No.2026-0217-CNY</div>
             <div class="check-gate"><span id="disp-gate">26</span>检票口</div>
 
@@ -340,7 +193,7 @@
             </div>
 
             <div class="passenger-row">
-                <span class="passenger-name" id="disp-name">张三</span>
+                <span class="passenger-name" id="disp-name">追梦人</span>
                 <span class="passenger-id" id="disp-id">110***20260217****</span>
             </div>
 
@@ -358,7 +211,7 @@
     </div>
 
     <div class="controls">
-        <h3>📝 全信息自定义面板</h3>
+        <h3>📝 自由编辑所有信息</h3>
         <div class="control-grid">
             <div class="control-item">
                 <label>始发站</label>
@@ -370,7 +223,7 @@
             </div>
 
             <div class="control-item">
-                <label>乘车日期 (默认为2026春节)</label>
+                <label>乘车日期</label>
                 <input type="text" id="in-date" value="2026年02月17日">
             </div>
             <div class="control-item">
@@ -383,12 +236,12 @@
                 <input type="text" id="in-train" value="G2026">
             </div>
             <div class="control-item">
-                <label>票价 (可填数字或文字)</label>
+                <label>票价</label>
                 <input type="text" id="in-price" value="无价">
             </div>
 
             <div class="control-item">
-                <label>车厢</label>
+                <label>车厢号</label>
                 <input type="text" id="in-car" value="01车">
             </div>
             <div class="control-item">
@@ -406,66 +259,61 @@
             </div>
 
             <div class="control-item">
-                <label>乘车人 (生成二维码)</label>
-                <input type="text" id="in-name" value="张三">
+                <label>姓名 (生成二维码)</label>
+                <input type="text" id="in-name" value="追梦人">
             </div>
             <div class="control-item">
-                <label>身份证号 (展示用)</label>
-                <input type="text" id="in-id" value="110***20260217****">
-            </div>
-
-            <div class="control-item">
-                <label>左上角票号</label>
+                <label>票面左上序列号</label>
                 <input type="text" id="in-serial" value="No.2026-0217-CNY">
-            </div>
-            <div class="control-item">
-                <label>红色印章文字 (空格分隔)</label>
-                <input type="text" id="in-stamp" value="新年 快乐" placeholder="例如：新年 快乐">
             </div>
 
             <div class="control-item full">
-                <label>底部广告/祝福语</label>
+                <label>身份证号 (仅展示)</label>
+                <input type="text" id="in-id" value="110***20260217****">
+            </div>
+
+            <div class="control-item full">
+                <label>印章文字 (空格分隔上下行)</label>
+                <input type="text" id="in-stamp" value="新年 快乐">
+            </div>
+
+            <div class="control-item full">
+                <label>底部广告语</label>
                 <input type="text" id="in-ad" value="辞旧迎新 · 阖家欢乐 | 限乘当日当次车">
             </div>
 
-            <button class="btn-download" onclick="downloadTicket()">📸 下载高清车票图片</button>
+            <button class="btn-download" onclick="downloadTicket()">📸 生成并保存高清图片</button>
         </div>
+        <div class="tips">提示：点击上方按钮自动下载，或长按车票保存</div>
     </div>
 
     <script>
-        // 初始化二维码
-        const qrcode = new QRCode(document.getElementById("qrcode"), {
-            width: 80,
-            height: 80,
-            colorDark : "#000",
-            colorLight : "#fff",
-            correctLevel : QRCode.CorrectLevel.H
-        });
-
-        function updateQR(text) {
-            qrcode.clear();
-            qrcode.makeCode(text + " 新年大吉"); // 二维码内容后缀
+        function fitTicket() {
+            const container = document.getElementById('scale-container');
+            const ticket = document.querySelector('.ticket');
+            const ticketWidth = 640;
+            const screenWidth = container.offsetWidth; 
+            let scale = screenWidth / ticketWidth;
+            if (scale > 1) scale = 1;
+            ticket.style.transform = `scale(${scale})`;
+            container.style.height = (400 * scale) + 'px';
         }
-        
-        // 初始生成
-        updateQR("张三");
+        window.addEventListener('resize', fitTicket);
+        window.addEventListener('load', fitTicket);
 
-        // 绑定所有输入框
+        const qrcode = new QRCode(document.getElementById("qrcode"), {
+            width: 80, height: 80, colorDark : "#000", colorLight : "#fff", correctLevel : QRCode.CorrectLevel.H
+        });
+        function updateQR(text) { qrcode.clear(); qrcode.makeCode(text + " 新年大吉"); }
+        updateQR("追梦人");
+
         const mappings = {
-            'in-start': 'disp-start',
-            'in-end': 'disp-end',
-            'in-date': 'disp-date',
-            'in-time': 'disp-time',
-            'in-train': 'disp-train',
-            'in-price': 'disp-price',
-            'in-car': 'disp-car',
-            'in-seat': 'disp-seat',
-            'in-seat-class': 'disp-seat-class',
-            'in-gate': 'disp-gate',
-            'in-name': 'disp-name',
-            'in-id': 'disp-id',
-            'in-serial': 'disp-serial',
-            'in-ad': 'disp-ad'
+            'in-start': 'disp-start', 'in-end': 'disp-end', 
+            'in-date': 'disp-date', 'in-time': 'disp-time',
+            'in-train': 'disp-train', 'in-price': 'disp-price',
+            'in-car': 'disp-car', 'in-seat': 'disp-seat', 'in-seat-class': 'disp-seat-class',
+            'in-gate': 'disp-gate', 'in-name': 'disp-name', 
+            'in-id': 'disp-id', 'in-serial': 'disp-serial', 'in-ad': 'disp-ad'
         };
 
         for (let [inputId, dispId] of Object.entries(mappings)) {
@@ -474,30 +322,32 @@
             if(input && disp) {
                 input.addEventListener('input', (e) => {
                     disp.innerText = e.target.value;
-                    // 特殊处理：名字改变时更新二维码
                     if(inputId === 'in-name') updateQR(e.target.value);
                 });
             }
         }
-
-        // 特殊处理：印章 (通过空格分隔上下两行)
+        
         document.getElementById('in-stamp').addEventListener('input', (e) => {
             const parts = e.target.value.split(' ');
             document.getElementById('disp-stamp1').innerText = parts[0] || '';
             document.getElementById('disp-stamp2').innerText = parts[1] || '';
         });
 
-        // 下载功能
         function downloadTicket() {
             const node = document.getElementById('ticket-node');
-            html2canvas(node, {
-                scale: 2, // 高清
-                backgroundColor: null
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = '2026春节车票.png';
-                link.href = canvas.toDataURL("image/png");
-                link.click();
+            const originalTransform = node.style.transform;
+            node.style.transform = 'none';
+            html2canvas(node, { scale: 2, backgroundColor: null, useCORS: true }).then(canvas => {
+                node.style.transform = originalTransform;
+                try {
+                    const link = document.createElement('a');
+                    link.download = '2026新春车票.png';
+                    link.href = canvas.toDataURL("image/png");
+                    document.body.appendChild(link); link.click(); document.body.removeChild(link);
+                } catch (e) { alert("请长按图片手动保存"); }
+            }).catch(err => { 
+                node.style.transform = originalTransform; 
+                alert("生成失败，请截图保存"); 
             });
         }
     </script>
