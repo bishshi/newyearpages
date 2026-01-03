@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About</title>
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fdf2f2; /* 浅淡的春节红底色 */
+        }
+        header {
+            text-align: center;
+            border-bottom: 3px solid #d32f2f;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        h1 { color: #d32f2f; margin-bottom: 5px; }
+        .project-meta { font-size: 0.9em; color: #666; }
+        
+        section {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #d32f2f;
+            border-left: 5px solid #d32f2f;
+            padding-left: 10px;
+            font-size: 1.3em;
+            margin-top: 0;
+        }
+        .tag {
+            display: inline-block;
+            background: #ffebee;
+            color: #c62828;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            margin-right: 5px;
+        }
+        .milestone {
+            border-left: 2px solid #eee;
+            padding-left: 20px;
+            margin-left: 10px;
+        }
+        .date { font-weight: bold; color: #444; }
+        code {
+            background: #f4f4f4;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: Consolas, monospace;
+        }
+        .footer {
+            text-align: center;
+            font-size: 0.8em;
+            color: #999;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🏮 2026 新春系列项目开发日志</h1>
+    <div class="project-meta">
+        <span>开发者：不告诉你</span> | 
+        <span>状态：已上线 /span> | 
+        <span>最后更新：2026-1-3</span>
+    </div>
+</header>
+
+<section>
+    <h2>1. 项目概况</h2>
+    <p>本次新春系列页面旨在打造一个具有浓厚年味的互动体验。包含<strong>新年日历、新春贺信、留言板、灯谜互动</strong>等子页面。核心视觉基调采用大红与描金，融合剪纸、纸雕等中国传统元素。</p>
+</section>
+
+<section>
+    <h2>2. 技术实现方案</h2>
+    <ul>
+        <li><strong>布局方案：</strong> 使用 <code>Flexbox</code> 和 <code>CSS Grid</code> 实现响应式适配。</li>
+        <li><strong>动效：</strong> 运用 CSS3 <code>@keyframes</code> 实现灯笼摇晃、烟花绽放及文字渐显效果。</li>
+        <li><strong>优化：</strong> 采用图片懒加载技术，减少春节高清背景图导致的首次加载延迟。</li>
+    </ul>
+</section>
+
+<section>
+    <h2>3. 关键功能开发记录</h2>
+    <div class="milestone">
+        <p><span class="date">2025-12-25</span> <span class="tag">初始化</span> 完成基础贺卡（特殊版）</p>
+        <p><span class="date">2025-12-26</span> <span class="tag">新功能</span> 编写倒计时页面</p>
+        <p><span class="date">2025-12-27</span> <span class="tag">新功能</span> <span class="tag">优化</span>优化页面设计，添加留言板功能。</p>
+        <p><span class="date">2025-12-27</span> <span class="tag">新功能</span> 完成基础贺卡（普通），并开发简单的定制贺卡功能</p>
+        <p><span class="date">2025-12-30</span> <span class="tag">优化</span> 优化倒计时日历</p>
+        <p><span class="date">2025-12-30</span> <span class="tag">新功能</span> 添加“新春贺信”</p>
+        <p><span class="date">2025-12-31</span> <span class="tag">新功能</span> 实现烟花全屏粒子交互效果</p>
+        <p><span class="date">2026-01-01</span> <span class="tag">新功能</span> 开发幸运抽奖功能</p>
+        <p><span class="date">2026-01-02</span> <span class="tag">新功能</span> 实现灯谜抽签小游戏</p>
+        <p><span class="date">2026 -01-03</span> <span class="tag">新功能</span> 创意车票定制、创意红包页面</p>
+    </div>
+</section>
+
+<section>
+    <h2>4. 已知问题与解决方案 (Bug Log)</h2>
+    <table border="1" cellspacing="0" cellpadding="10" style="width: 100%; border-collapse: collapse; border-color: #eee;">
+        <tr style="background-color: #f9f9f9;">
+            <th>问题描述</th>
+            <th>解决方案</th>
+        </tr>
+        <tr>
+            <td>车票定制功能有缺陷</td>
+            <td>不知道</td>
+        </tr>
+    </table>
+</section>
+
+<section>
+    <h2>5. 后续迭代计划</h2>
+    <ul>
+        <li>暂无</li>
+    </ul>
+</section>
+
+<div class="footer">
+    © 2026 开发工作室 | 恭贺新禧，万事如意
+</div>
+
+</body>
+</html>

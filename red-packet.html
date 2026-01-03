@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>马到成功 - 2026马年贺岁</title>
+    <style>
+        :root {
+            --gold: #ffd700;
+            --red: #e62e2e;
+            --dark-red: #800000;
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            overflow: hidden;
+            background: radial-gradient(circle, #b30000 0%, var(--dark-red) 100%);
+            font-family: "Microsoft YaHei", sans-serif;
+            touch-action: none; /* 防止手机端下拉刷新 */
+        }
+
+        /* 顶部信息栏 */
+        .info-bar {
+            position: fixed;
+            top: 25px;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            color: var(--gold);
+            font-size: 22px;
+            font-weight: bold;
+            z-index: 100;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+        }
+
+        /* 红包样式 */
+        .red-packet {
+            position: absolute;
+            width: 65px; height: 90px;
+            background: var(--red);
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            box-sizing: border-box;
+            border: 2px solid var(--gold);
+            user-select: none;
+        }
+        .red-packet::before { content: "馬"; color: var(--gold); font-size: 26px; font-weight: bold; }
+        .red-packet::after { content: ""; width: 28px; height: 28px; background: var(--gold); border-radius: 50%; border: 2px solid #b38600; box-shadow: inset 0 0 5px rgba(0,0,0,0.2); }
+
+        /* 结算弹窗 */
+        #result-mask {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .result-card {
+            background: var(--red);
+            padding: 40px 30px;
+            border-radius: 24px;
+            border: 5px solid var(--gold);
+            text-align: center;
+            color: var(--gold);
+            max-width: 280px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .result-card h2 { font-size: 34px; margin: 0 0 15px 0; }
+        .result-card .score-num { font-size: 56px; color: #fff; display: block; margin: 15px 0; text-shadow: 0 0 10px var(--gold); }
+        .result-card .wish { font-size: 18px; line-height: 1.6; color: #ffeaea; margin-bottom: 25px; }
+        .btn-restart {
+            background: var(--gold);
+            color: var(--dark-red);
+            border: none;
+            padding: 12px 40px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #b38600;
+        }
+        .btn-restart:active { transform: translateY(2px); box-shadow: 0 2px 0 #b38600; }
+
+        /* 点击反馈 */
+        .plus-one {
+            position: absolute;
+            color: var(--gold);
+            font-weight: bold;
+            font-size: 28px;
+            animation: floatUp 0.8s ease-out forwards;
+            pointer-events: none;
+            z-index: 500;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-60px); } }
+    </style>
+</head>
+<body>
+
+    <div class="info-bar">
+        <div>⏳ 时间: <span id="timer">30</span>s</div>
+        <div>🧧 金币: <span id="score">0</span></div>
+    </div>
+
+    <div id="result-mask">
+        <div class="result-card">
+            <h2 id="result-title">马到成功！</h2>
+            <p>恭喜抢到金币</p>
+            <span class="score-num" id="final-score">0</span>
+            <p class="wish" id="result-wish"></p>
+            <button class="btn-restart" onclick="location.reload()">再玩一次</button>
+        </div>
+    </div>
+
+    <script>
+        let score = 0;
+        let timeLeft = 30;
+        let gameActive = true;
+        const scoreEl = document.getElementById('score');
+        const timerEl = document.getElementById('timer');
+        const mask = document.getElementById('result-mask');
+
+        // 倒计时逻辑
+        const countdown = setInterval(() => {
+            if (!gameActive) return;
+            timeLeft--;
+            timerEl.innerText = timeLeft;
+            if (timeLeft <= 0) endGame();
+        }, 1000);
+
+        function createRedPacket() {
+            if (!gameActive) return;
+
+            const packet = document.createElement('div');
+            packet.className = 'red-packet';
+            
+            const startX = Math.random() * (window.innerWidth - 70);
+            
+            // --- 速度调整：1.2 到 2.5 之间，非常平缓 ---
+            const speed = Math.random() * 1.3 + 1.2; 
+            const rotation = Math.random() * 30 - 15; // 稍微歪一点增加灵动感
+
+            packet.style.left = startX + 'px';
+            packet.style.top = '-110px';
+            packet.style.transform = `rotate(${rotation}deg)`;
+
+            let currentTop = -110;
+            function fall() {
+                if (!gameActive) { 
+                    packet.style.transition = 'opacity 0.5s';
+                    packet.style.opacity = '0';
+                    setTimeout(() => packet.remove(), 500);
+                    return; 
+                }
+                
+                currentTop += speed;
+                packet.style.top = currentTop + 'px';
+                
+                if (currentTop < window.innerHeight) {
+                    packet.rafId = requestAnimationFrame(fall);
+                } else {
+                    packet.remove();
+                }
+            }
+
+            const grab = (e) => {
+                if (!gameActive) return;
+                // 兼容触摸和点击位置
+                const clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+                const clientY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+                
+                score += 1;
+                scoreEl.innerText = score;
+                showPlusOne(clientX, clientY);
+                cancelAnimationFrame(packet.rafId);
+                packet.remove();
+            };
+
+            packet.addEventListener('mousedown', grab);
+            packet.addEventListener('touchstart', (e) => {
+                e.preventDefault(); // 防止双击缩放
+                grab(e);
+            }, {passive: false});
+
+            document.body.appendChild(packet);
+            packet.rafId = requestAnimationFrame(fall);
+        }
+
+        function showPlusOne(x, y) {
+            const el = document.createElement('div');
+            el.className = 'plus-one';
+            el.innerText = '+1';
+            el.style.left = (x - 10) + 'px';
+            el.style.top = (y - 20) + 'px';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 800);
+        }
+
+        function endGame() {
+            gameActive = false;
+            clearInterval(countdown);
+            clearInterval(packetInterval);
+            
+            let title = "";
+            let wish = "";
+            if (score > 35) {
+                title = "一马当先！";
+                wish = "手速封神！2026马年您必将大展宏图，福星高照，万事如意！";
+            } else if (score > 15) {
+                title = "龙马精神！";
+                wish = "好运临门！祝您新的一年身体棒、胃口好，每天都神采奕奕！";
+            } else {
+                title = "马到成功！";
+                wish = "开门大吉！祝您在2026马年步步高升，心想事成！";
+            }
+
+            document.getElementById('final-score').innerText = score;
+            document.getElementById('result-title').innerText = title;
+            document.getElementById('result-wish').innerText = wish;
+            mask.style.display = 'flex';
+        }
+
+        // 调整产生频率：每400ms产生一个，即使速度慢画面也不空
+        const packetInterval = setInterval(createRedPacket, 400);
+
+        // 禁止弹性滚动
+        document.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+    </script>
+</body>
+</html>
