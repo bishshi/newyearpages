@@ -73,9 +73,9 @@ function showToast(message) {
     }
     toast.textContent = message;
     toast.style.opacity = '1';
-    
+
     if (toast.timer) clearTimeout(toast.timer);
-    
+
     toast.timer = setTimeout(() => {
         toast.style.opacity = '0';
     }, 2500);
@@ -116,14 +116,14 @@ function initTimeLock() {
         // 应用锁定效果
         if (isLocked) {
             item.classList.add('locked');
-            
+
             // 使用捕获阶段 (capture: true) 拦截点击
             // 确保在页面跳转逻辑之前执行
-            item.addEventListener('click', function(e) {
+            item.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
                 showToast(lockMessage);
-            }, true); 
+            }, true);
         }
     });
 }
@@ -131,27 +131,27 @@ function initTimeLock() {
 /**
  * 3. 页面跳转与初始化
  */
-function setupNavigation() {
-    const overlay = document.getElementById('transition-overlay');
-    
-    document.querySelectorAll('.nav-item').forEach(item => {
-        // 只给未锁定的卡片绑定跳转动画
-        // (虽然 locked 状态已经拦截了点击，但这样写更严谨)
-        if(!item.classList.contains('locked')) {
-            item.addEventListener('click', function(e) {
-                const href = this.getAttribute('href');
-                if (href && href !== '#' && !href.startsWith('javascript')) {
-                    e.preventDefault();
-                    overlay.style.opacity = '1';
-                    overlay.style.pointerEvents = 'all';
-                    setTimeout(() => {
-                        window.location.href = href;
-                    }, 600); // 等待遮罩变黑后跳转
-                }
-            });
-        }
-    });
-}
+// function setupNavigation() {
+//     const overlay = document.getElementById('transition-overlay');
+
+//     document.querySelectorAll('.nav-item').forEach(item => {
+//         // 只给未锁定的卡片绑定跳转动画
+//         // (虽然 locked 状态已经拦截了点击，但这样写更严谨)
+//         if (!item.classList.contains('locked')) {
+//             item.addEventListener('click', function (e) {
+//                 const href = this.getAttribute('href');
+//                 if (href && href !== '#' && !href.startsWith('javascript')) {
+//                     e.preventDefault();
+//                     overlay.style.opacity = '1';
+//                     overlay.style.pointerEvents = 'all';
+//                     setTimeout(() => {
+//                         window.location.href = href;
+//                     }, 600); // 等待遮罩变黑后跳转
+//                 }
+//             });
+//         }
+//     });
+// }
 
 // 启动
 window.addEventListener('resize', resize);
