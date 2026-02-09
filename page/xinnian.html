@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>2026 农历新年海报</title>
+    <style>
+        :root {
+            --gold: #ffd700;
+            --red: #e62117;
+            --dark-red: #a0100a;
+            --tassel: #ff4500;
+        }
+
+        body {
+            margin: 0;
+            background-color: #2b0000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: "STKaiti", "KaiTi", "Microsoft YaHei", serif;
+            overflow: hidden;
+        }
+
+        .poster {
+            width: 380px;
+            height: 580px;
+            background: radial-gradient(circle, var(--red) 0%, var(--dark-red) 100%);
+            border: 12px double var(--gold);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-around;
+            padding: 30px;
+            box-shadow: 0 0 100px rgba(0,0,0,0.7);
+        }
+
+        /* --- 仿真灯笼 --- */
+        .lantern-box {
+            position: absolute;
+            top: -10px;
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+        }
+
+        .lantern {
+            position: relative;
+            width: 60px;
+            height: 50px;
+            background: var(--red);
+            border-radius: 50% / 20%;
+            border: 2px solid var(--gold);
+            box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.4), 0 10px 20px rgba(0,0,0,0.3);
+            animation: swing 3.5s ease-in-out infinite alternate;
+            transform-origin: top center;
+        }
+
+        /* 灯笼中间的竖线 */
+        .lantern::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 15px; right: 15px; bottom: 0;
+            border-left: 2px solid var(--gold);
+            border-right: 2px solid var(--gold);
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+
+        /* 灯笼盖子 */
+        .lantern-top, .lantern-bottom {
+            position: absolute;
+            width: 30px;
+            height: 6px;
+            background: var(--gold);
+            left: 15px;
+        }
+        .lantern-top { top: -6px; border-radius: 3px 3px 0 0; }
+        .lantern-bottom { bottom: -6px; border-radius: 0 0 3px 3px; }
+
+        /* 灯笼穗 */
+        .tassel {
+            position: absolute;
+            bottom: -35px;
+            left: 28px;
+            width: 4px;
+            height: 30px;
+            background: var(--gold);
+            box-shadow: -4px 0 var(--tassel), 4px 0 var(--tassel);
+            border-radius: 0 0 5px 5px;
+        }
+
+        /* --- 动态福字 --- */
+        .fu-wrapper {
+            perspective: 1000px;
+            margin: 20px 0;
+        }
+
+        .fu-card {
+            width: 140px;
+            height: 140px;
+            background-color: var(--gold);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 30px rgba(0,0,0,0.4);
+            /* 初始状态旋转45度形成菱形 */
+            transform: rotate(45deg);
+            animation: fu-rotate 6s ease-in-out infinite alternate;
+        }
+
+        .fu-text {
+            font-size: 90px;
+            font-weight: bold;
+            color: var(--red);
+            /* 抵消外层45度，让字正着写 */
+            transform: rotate(-45deg); 
+            user-select: none;
+        }
+
+        /* --- 文字内容 --- */
+        h1 {
+            color: var(--gold);
+            font-size: 3.5rem;
+            margin: 0;
+            letter-spacing: 8px;
+            text-shadow: 3px 3px 0px rgba(0,0,0,0.2);
+        }
+
+        .sub-text {
+            color: var(--gold);
+            font-size: 1.4rem;
+            border-top: 1px solid var(--gold);
+            border-bottom: 1px solid var(--gold);
+            padding: 5px 0;
+            width: 200px;
+        }
+
+        .blessing {
+            color: var(--gold);
+            font-size: 1.2rem;
+            line-height: 1.6;
+            font-weight: bold;
+        }
+
+        /* --- 动画帧 --- */
+        @keyframes swing {
+            0% { transform: rotate(-8deg); }
+            100% { transform: rotate(8deg); }
+        }
+
+        @keyframes fu-rotate {
+            0% { transform: rotate(45deg); } /* 菱形正着 */
+            30% { transform: rotate(45deg); } /* 停留一下 */
+            100% { transform: rotate(225deg); } /* 旋转180度，福倒了 */
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="poster">
+        <div class="lantern-box">
+            <div class="lantern">
+                <div class="lantern-top"></div>
+                <div class="lantern-bottom"></div>
+                <div class="tassel"></div>
+            </div>
+            <div class="lantern">
+                <div class="lantern-top"></div>
+                <div class="lantern-bottom"></div>
+                <div class="tassel"></div>
+            </div>
+        </div>
+
+        <div class="sub-text"><center>2026 丙午马年</center></div>
+        
+        <h1>新春大吉</h1>
+
+        <div class="fu-wrapper">
+            <div class="fu-card">
+                <div class="fu-text">福</div>
+            </div>
+        </div>
+
+        <div class="blessing">
+            龙腾盛世 · 马到成功<br>
+            岁岁平安 · 年年有余
+        </div>
+
+        <div style="color: var(--gold); font-size: 0.9rem; letter-spacing: 2px;">
+            HAPPY CHINESE NEW YEAR
+        </div>
+    </div>
+
+</body>
+</html>
