@@ -7,233 +7,729 @@
     <style>
         :root {
             --gold: #ffd700;
-            --red: #e62e2e;
-            --dark-red: #800000;
+            --red: #ff3b5c;
+            --dark-red: #8b0000;
+            --shadow-gold: rgba(255, 215, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body, html {
-            margin: 0; padding: 0;
-            width: 100%; height: 100%;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
             overflow: hidden;
-            background: radial-gradient(circle, #b30000 0%, var(--dark-red) 100%);
-            font-family: "Microsoft YaHei", sans-serif;
-            touch-action: none; /* 防止手机端下拉刷新 */
+            background: linear-gradient(135deg, #1a0000 0%, #4a0000 50%, #1a0000 100%);
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            touch-action: none;
+        }
+
+        /* 背景动画 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(255, 59, 92, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+            animation: bgPulse 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
 
         /* 顶部信息栏 */
         .info-bar {
             position: fixed;
-            top: 25px;
-            width: 100%;
+            top: 15px;
+            left: 0;
+            right: 0;
             display: flex;
             justify-content: space-around;
-            color: var(--gold);
-            font-size: 22px;
-            font-weight: bold;
+            align-items: center;
             z-index: 100;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+            padding: 0 20px;
         }
 
-        /* 红包样式 */
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .info-item .icon {
+            font-size: 20px;
+        }
+
+        .info-item .value {
+            color: var(--gold);
+            font-size: clamp(18px, 5vw, 22px);
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        /* 游戏容器 */
+        #game-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* 传统红包样式 */
         .red-packet {
             position: absolute;
-            width: 65px; height: 90px;
-            background: var(--red);
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            width: 80px;
+            height: 110px;
             cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 0;
-            box-sizing: border-box;
-            border: 2px solid var(--gold);
             user-select: none;
+            pointer-events: auto;
         }
-        .red-packet::before { content: "馬"; color: var(--gold); font-size: 26px; font-weight: bold; }
-        .red-packet::after { content: ""; width: 28px; height: 28px; background: var(--gold); border-radius: 50%; border: 2px solid #b38600; box-shadow: inset 0 0 5px rgba(0,0,0,0.2); }
+
+        /* 红包主体 */
+        .packet-card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: linear-gradient(180deg, #ff0000 0%, #cc0000 100%);
+            border-radius: 10px;
+            box-shadow: 
+                0 8px 20px rgba(0, 0, 0, 0.5),
+                inset 0 2px 5px rgba(255, 255, 255, 0.3),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.3);
+            border: 2px solid #d4af37;
+        }
+
+        /* 红包顶部封口 */
+        .packet-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 28px;
+            background: linear-gradient(180deg, #d4af37 0%, #c5a028 100%);
+            border-radius: 8px 8px 0 0;
+            border-bottom: 2px solid #b8941f;
+            box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.5);
+        }
+
+        /* 红包顶部装饰圆点 */
+        .packet-card::after {
+            content: "";
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 8px;
+            background: #8b7355;
+            border-radius: 50%;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 红包中间的福字 */
+        .packet-icon {
+            position: absolute;
+            top: 55%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, #ffe680 0%, #d4af37 70%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: #cc0000;
+            border: 3px solid #b8941f;
+            box-shadow: 
+                0 3px 10px rgba(0, 0, 0, 0.4),
+                inset 0 2px 5px rgba(255, 255, 255, 0.5),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+        }
+
+        /* 红包花纹装饰 */
+        .packet-pattern {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: repeating-linear-gradient(
+                90deg,
+                #d4af37 0px,
+                #d4af37 5px,
+                transparent 5px,
+                transparent 10px
+            );
+            opacity: 0.8;
+        }
+
+        /* 红包点击动画 */
+        .red-packet.grabbed .packet-card {
+            animation: grabPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes grabPop {
+            0% { 
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+            50% { 
+                transform: scale(1.3) rotate(10deg);
+                opacity: 0.9;
+            }
+            100% { 
+                transform: scale(0) rotate(25deg);
+                opacity: 0;
+            }
+        }
 
         /* 结算弹窗 */
         #result-mask {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            backdrop-filter: blur(10px);
         }
+
         .result-card {
-            background: var(--red);
-            padding: 40px 30px;
-            border-radius: 24px;
-            border: 5px solid var(--gold);
+            background: linear-gradient(135deg, #2a0000 0%, #1a0000 100%);
+            padding: 50px 40px;
+            border-radius: 30px;
+            border: 3px solid var(--gold);
             text-align: center;
             color: var(--gold);
-            max-width: 280px;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            max-width: 350px;
+            width: 90%;
+            box-shadow: 
+                0 0 60px rgba(255, 215, 0, 0.4),
+                inset 0 2px 20px rgba(255, 215, 0, 0.1);
             animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        .result-card h2 { font-size: 34px; margin: 0 0 15px 0; }
-        .result-card .score-num { font-size: 56px; color: #fff; display: block; margin: 15px 0; text-shadow: 0 0 10px var(--gold); }
-        .result-card .wish { font-size: 18px; line-height: 1.6; color: #ffeaea; margin-bottom: 25px; }
-        .btn-restart {
-            background: var(--gold);
-            color: var(--dark-red);
-            border: none;
-            padding: 12px 40px;
-            font-size: 20px;
-            font-weight: bold;
-            border-radius: 30px;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #b38600;
+        @keyframes popIn {
+            0% { transform: scale(0.5) translateY(50px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
         }
-        .btn-restart:active { transform: translateY(2px); box-shadow: 0 2px 0 #b38600; }
+
+        .result-card h2 {
+            font-size: clamp(30px, 8vw, 38px);
+            margin: 0 0 10px 0;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));
+        }
+
+        .result-card .score-num {
+            font-size: clamp(56px, 15vw, 72px);
+            color: #fff;
+            display: block;
+            margin: 20px 0;
+            font-weight: bold;
+            text-shadow: 
+                0 0 20px var(--gold),
+                0 0 40px var(--gold);
+        }
+
+        .result-card .wish {
+            font-size: clamp(16px, 4vw, 18px);
+            line-height: 1.8;
+            color: #ffcccb;
+            margin-bottom: 30px;
+        }
+
+        .btn-restart {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #1a0000;
+            border: none;
+            padding: 15px 50px;
+            font-size: clamp(18px, 5vw, 22px);
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #b38600, 0 8px 20px rgba(255, 215, 0, 0.4);
+            transition: all 0.2s;
+        }
+
+        .btn-restart:active {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0 #b38600, 0 5px 15px rgba(255, 215, 0, 0.4);
+        }
 
         /* 点击反馈 */
         .plus-one {
-            position: absolute;
+            position: fixed;
             color: var(--gold);
             font-weight: bold;
-            font-size: 28px;
-            animation: floatUp 0.8s ease-out forwards;
+            font-size: 32px;
+            animation: floatUp 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
             pointer-events: none;
             z-index: 500;
-            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+            text-shadow: 
+                0 0 10px rgba(255, 215, 0, 0.8),
+                0 0 20px var(--gold);
         }
-        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-60px); } }
+
+        @keyframes floatUp {
+            0% { 
+                opacity: 1;
+                transform: translateY(0) scale(0.8);
+            }
+            100% { 
+                opacity: 0;
+                transform: translateY(-100px) scale(1.5);
+            }
+        }
+
+        /* 开始界面 */
+        .start-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a0000 0%, #4a0000 50%, #1a0000 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            gap: 40px;
+        }
+
+        .start-title {
+            font-size: clamp(40px, 12vw, 56px);
+            background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+            filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.6));
+            animation: titlePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .difficulty-selector {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 0 20px;
+        }
+
+        .difficulty-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            padding: 15px 30px;
+            font-size: clamp(16px, 4vw, 18px);
+            font-weight: bold;
+            border-radius: 15px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            min-width: 120px;
+        }
+
+        .difficulty-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: var(--gold);
+            transform: translateY(-2px);
+        }
+
+        .difficulty-btn.selected {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #1a0000;
+            border-color: var(--gold);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        }
+
+        .difficulty-label {
+            color: var(--gold);
+            font-size: clamp(18px, 5vw, 22px);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #1a0000;
+            border: none;
+            padding: 20px 60px;
+            font-size: clamp(22px, 6vw, 28px);
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #b38600, 0 10px 30px rgba(255, 215, 0, 0.4);
+            transition: all 0.2s;
+            margin-top: 20px;
+        }
+
+        .btn-start:active {
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 #b38600, 0 6px 20px rgba(255, 215, 0, 0.4);
+        }
     </style>
-    <!-- Matomo -->
-    <script>
-    var _paq = window._paq = window._paq || [];
-    /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-    _paq.push(['trackPageView']);
-    _paq.push(['enableLinkTracking']);
-    (function() {
-        var u="//statistic.biss.click/";
-        _paq.push(['setTrackerUrl', u+'matomo.php']);
-        _paq.push(['setSiteId', '2']);
-        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-        g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
-    })();
-    </script>
-    <!-- End Matomo Code -->
 </head>
 <body>
 
-    <div class="info-bar">
-        <div>⏳ 时间: <span id="timer">30</span>s</div>
-        <div>🧧 金币: <span id="score">0</span></div>
+    <!-- 开始界面 -->
+    <div class="start-overlay" id="start-overlay">
+        <div class="start-title">🐴 马到成功 🐴</div>
+        
+        <div>
+            <div class="difficulty-label">选择难度</div>
+            <div class="difficulty-selector">
+                <button class="difficulty-btn" data-speed="easy">
+                    🐌 简单
+                </button>
+                <button class="difficulty-btn selected" data-speed="normal">
+                    🐎 普通
+                </button>
+                <button class="difficulty-btn" data-speed="hard">
+                    🚀 困难
+                </button>
+            </div>
+        </div>
+        
+        <button class="btn-start" id="btn-start">开始游戏</button>
     </div>
+
+    <div class="info-bar">
+        <div class="info-item">
+            <span class="icon">⏱️</span>
+            <span class="value" id="timer">30</span>
+        </div>
+        <div class="info-item">
+            <span class="icon">💰</span>
+            <span class="value" id="score">0</span>
+        </div>
+    </div>
+
+    <!-- 游戏容器 -->
+    <div id="game-container"></div>
 
     <div id="result-mask">
         <div class="result-card">
             <h2 id="result-title">马到成功！</h2>
-            <p>恭喜抢到金币</p>
+            <p style="color: #ffcccb; margin: 10px 0;">恭喜抢到</p>
             <span class="score-num" id="final-score">0</span>
+            <span style="color: var(--gold); font-size: 20px; display: block; margin-bottom: 20px;">金币</span>
             <p class="wish" id="result-wish"></p>
-            <button class="btn-restart" onclick="location.reload()">再玩一次</button>
+            <button class="btn-restart" onclick="location.reload()">再来一局</button>
         </div>
     </div>
 
     <script>
-        let score = 0;
-        let timeLeft = 30;
-        let gameActive = true;
-        const scoreEl = document.getElementById('score');
-        const timerEl = document.getElementById('timer');
-        const mask = document.getElementById('result-mask');
+        // 难度配置
+        const DIFFICULTY_CONFIG = {
+            easy: {
+                speedMin: 0.8,
+                speedMax: 1.5,
+                spawnInterval: 500
+            },
+            normal: {
+                speedMin: 1.2,
+                speedMax: 2.5,
+                spawnInterval: 400
+            },
+            hard: {
+                speedMin: 2.5,
+                speedMax: 4.5,
+                spawnInterval: 300
+            }
+        };
 
-        // 倒计时逻辑
-        const countdown = setInterval(() => {
-            if (!gameActive) return;
-            timeLeft--;
-            timerEl.innerText = timeLeft;
-            if (timeLeft <= 0) endGame();
-        }, 1000);
+        // 游戏配置
+        let CONFIG = {
+            GAME_DURATION: 30,
+            SPAWN_INTERVAL: 400,
+            FALL_SPEED_MIN: 1.2,
+            FALL_SPEED_MAX: 2.5,
+            SCORE_THRESHOLDS: {
+                EXCELLENT: 35,
+                GOOD: 15
+            }
+        };
 
+        // 游戏状态
+        const gameState = {
+            score: 0,
+            timeLeft: CONFIG.GAME_DURATION,
+            isActive: false,
+            packets: [],
+            difficulty: 'normal'
+        };
+
+        // DOM 元素缓存
+        const elements = {
+            score: document.getElementById('score'),
+            timer: document.getElementById('timer'),
+            resultMask: document.getElementById('result-mask'),
+            finalScore: document.getElementById('final-score'),
+            resultTitle: document.getElementById('result-title'),
+            resultWish: document.getElementById('result-wish'),
+            startOverlay: document.getElementById('start-overlay'),
+            btnStart: document.getElementById('btn-start'),
+            gameContainer: document.getElementById('game-container')
+        };
+
+        let countdownInterval = null;
+        let spawnInterval = null;
+
+        // 难度选择
+        const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+        difficultyBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                difficultyBtns.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                gameState.difficulty = btn.dataset.speed;
+            });
+        });
+
+        // 开始游戏
+        elements.btnStart.addEventListener('click', startGame);
+
+        function startGame() {
+            // 应用难度设置
+            const difficulty = DIFFICULTY_CONFIG[gameState.difficulty];
+            CONFIG.FALL_SPEED_MIN = difficulty.speedMin;
+            CONFIG.FALL_SPEED_MAX = difficulty.speedMax;
+            CONFIG.SPAWN_INTERVAL = difficulty.spawnInterval;
+            
+            // 根据难度调整分数阈值
+            if (gameState.difficulty === 'easy') {
+                CONFIG.SCORE_THRESHOLDS.EXCELLENT = 25;
+                CONFIG.SCORE_THRESHOLDS.GOOD = 12;
+            } else if (gameState.difficulty === 'hard') {
+                CONFIG.SCORE_THRESHOLDS.EXCELLENT = 50;
+                CONFIG.SCORE_THRESHOLDS.GOOD = 25;
+            }
+            
+            elements.startOverlay.style.display = 'none';
+            gameState.isActive = true;
+            startCountdown();
+            startSpawning();
+        }
+
+        // 倒计时
+        function startCountdown() {
+            countdownInterval = setInterval(() => {
+                if (!gameState.isActive) return;
+                
+                gameState.timeLeft--;
+                elements.timer.textContent = gameState.timeLeft;
+                
+                if (gameState.timeLeft <= 5) {
+                    elements.timer.parentElement.style.borderColor = '#ff6b6b';
+                    elements.timer.style.color = '#ff6b6b';
+                }
+                
+                if (gameState.timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        // 开始生成红包
+        function startSpawning() {
+            spawnInterval = setInterval(createRedPacket, CONFIG.SPAWN_INTERVAL);
+        }
+
+        // 创建红包
         function createRedPacket() {
-            if (!gameActive) return;
+            if (!gameState.isActive) return;
 
             const packet = document.createElement('div');
             packet.className = 'red-packet';
             
-            const startX = Math.random() * (window.innerWidth - 70);
+            packet.innerHTML = `
+                <div class="packet-card">
+                    <div class="packet-icon">福</div>
+                    <div class="packet-pattern"></div>
+                </div>
+            `;
             
-            // --- 速度调整：1.2 到 2.5 之间，非常平缓 ---
-            const speed = Math.random() * 1.3 + 1.2; 
-            const rotation = Math.random() * 30 - 15; // 稍微歪一点增加灵动感
-
-            packet.style.left = startX + 'px';
-            packet.style.top = '-110px';
-            packet.style.transform = `rotate(${rotation}deg)`;
-
-            let currentTop = -110;
-            function fall() {
-                if (!gameActive) { 
-                    packet.style.transition = 'opacity 0.5s';
-                    packet.style.opacity = '0';
-                    setTimeout(() => packet.remove(), 500);
-                    return; 
-                }
-                
-                currentTop += speed;
-                packet.style.top = currentTop + 'px';
-                
-                if (currentTop < window.innerHeight) {
-                    packet.rafId = requestAnimationFrame(fall);
-                } else {
-                    packet.remove();
-                }
-            }
-
-            const grab = (e) => {
-                if (!gameActive) return;
-                // 兼容触摸和点击位置
-                const clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
-                const clientY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
-                
-                score += 1;
-                scoreEl.innerText = score;
-                showPlusOne(clientX, clientY);
-                cancelAnimationFrame(packet.rafId);
-                packet.remove();
+            // 红包数据对象
+            const packetData = {
+                element: packet,
+                x: Math.random() * (window.innerWidth - 85),
+                y: -120,
+                speed: Math.random() * (CONFIG.FALL_SPEED_MAX - CONFIG.FALL_SPEED_MIN) + CONFIG.FALL_SPEED_MIN,
+                rotation: Math.random() * 20 - 10,  // 小角度旋转更自然
+                grabbed: false,
+                animationId: null
             };
-
-            packet.addEventListener('mousedown', grab);
-            packet.addEventListener('touchstart', (e) => {
-                e.preventDefault(); // 防止双击缩放
-                grab(e);
-            }, {passive: false});
-
-            document.body.appendChild(packet);
-            packet.rafId = requestAnimationFrame(fall);
-        }
-
-        function showPlusOne(x, y) {
-            const el = document.createElement('div');
-            el.className = 'plus-one';
-            el.innerText = '+1';
-            el.style.left = (x - 10) + 'px';
-            el.style.top = (y - 20) + 'px';
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 800);
-        }
-
-        function endGame() {
-            gameActive = false;
-            clearInterval(countdown);
-            clearInterval(packetInterval);
             
-            let title = "";
-            let wish = "";
-            if (score > 35) {
+            // 设置初始样式
+            packet.style.left = packetData.x + 'px';
+            packet.style.top = packetData.y + 'px';
+            
+            // 点击处理
+            const handleClick = (e) => {
+                if (!gameState.isActive || packetData.grabbed) return;
+                
+                e.preventDefault();
+                e.stopPropagation();
+                
+                packetData.grabbed = true;
+                
+                const clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
+                const clientY = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
+                
+                gameState.score++;
+                elements.score.textContent = gameState.score;
+                
+                showFeedback(clientX, clientY);
+                
+                // 停止动画
+                if (packetData.animationId) {
+                    cancelAnimationFrame(packetData.animationId);
+                }
+                
+                // 添加抓取动画
+                packet.classList.add('grabbed');
+                
+                // 延迟移除
+                setTimeout(() => {
+                    removePacket(packetData);
+                }, 400);
+            };
+            
+            packet.addEventListener('mousedown', handleClick);
+            packet.addEventListener('touchstart', handleClick, { passive: false });
+            
+            // 添加到容器
+            elements.gameContainer.appendChild(packet);
+            gameState.packets.push(packetData);
+            
+            // 开始下落动画
+            animate(packetData);
+        }
+
+        // 动画函数
+        function animate(packetData) {
+            if (!gameState.isActive || packetData.grabbed) return;
+            
+            // 更新位置
+            packetData.y += packetData.speed;
+            packetData.rotation += 0.3;  // 轻微旋转
+            
+            packetData.element.style.top = packetData.y + 'px';
+            packetData.element.querySelector('.packet-card').style.transform = 
+                `rotate(${packetData.rotation}deg)`;
+            
+            // 如果还在屏幕内，继续动画
+            if (packetData.y < window.innerHeight + 50) {
+                packetData.animationId = requestAnimationFrame(() => animate(packetData));
+            } else {
+                // 掉出屏幕，移除
+                removePacket(packetData);
+            }
+        }
+
+        // 移除红包
+        function removePacket(packetData) {
+            if (packetData.animationId) {
+                cancelAnimationFrame(packetData.animationId);
+            }
+            
+            const index = gameState.packets.indexOf(packetData);
+            if (index > -1) {
+                gameState.packets.splice(index, 1);
+            }
+            
+            if (packetData.element && packetData.element.parentNode) {
+                packetData.element.parentNode.removeChild(packetData.element);
+            }
+        }
+
+        // 显示 +1 反馈
+        function showFeedback(x, y) {
+            const feedback = document.createElement('div');
+            feedback.className = 'plus-one';
+            feedback.textContent = '+1';
+            feedback.style.left = x - 20 + 'px';
+            feedback.style.top = y - 30 + 'px';
+            
+            document.body.appendChild(feedback);
+            setTimeout(() => feedback.remove(), 1000);
+        }
+
+        // 结束游戏
+        function endGame() {
+            gameState.isActive = false;
+            clearInterval(countdownInterval);
+            clearInterval(spawnInterval);
+            
+            // 清除所有剩余红包
+            gameState.packets.forEach(packetData => {
+                if (packetData.animationId) {
+                    cancelAnimationFrame(packetData.animationId);
+                }
+                if (packetData.element) {
+                    packetData.element.style.transition = 'opacity 0.5s';
+                    packetData.element.style.opacity = '0';
+                    setTimeout(() => {
+                        if (packetData.element && packetData.element.parentNode) {
+                            packetData.element.parentNode.removeChild(packetData.element);
+                        }
+                    }, 500);
+                }
+            });
+            
+            gameState.packets = [];
+            
+            // 显示结果
+            setTimeout(showResult, 500);
+        }
+
+        // 显示结果
+        function showResult() {
+            const { score } = gameState;
+            let title, wish;
+
+            if (score > CONFIG.SCORE_THRESHOLDS.EXCELLENT) {
                 title = "一马当先！";
                 wish = "手速封神！2026马年您必将大展宏图，福星高照，万事如意！";
-            } else if (score > 15) {
+            } else if (score > CONFIG.SCORE_THRESHOLDS.GOOD) {
                 title = "龙马精神！";
                 wish = "好运临门！祝您新的一年身体棒、胃口好，每天都神采奕奕！";
             } else {
@@ -241,17 +737,29 @@
                 wish = "开门大吉！祝您在2026马年步步高升，心想事成！";
             }
 
-            document.getElementById('final-score').innerText = score;
-            document.getElementById('result-title').innerText = title;
-            document.getElementById('result-wish').innerText = wish;
-            mask.style.display = 'flex';
+            elements.finalScore.textContent = score;
+            elements.resultTitle.textContent = title;
+            elements.resultWish.textContent = wish;
+            elements.resultMask.style.display = 'flex';
         }
 
-        // 调整产生频率：每400ms产生一个，即使速度慢画面也不空
-        const packetInterval = setInterval(createRedPacket, 400);
+        // 禁止页面滚动和缩放
+        document.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+        }, { passive: false });
 
-        // 禁止弹性滚动
-        document.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+        document.addEventListener('gesturestart', (e) => {
+            e.preventDefault();
+        });
+        
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', (e) => {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
     </script>
 </body>
 </html>
